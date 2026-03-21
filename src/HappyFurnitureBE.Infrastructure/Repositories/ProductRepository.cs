@@ -25,7 +25,10 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
     {
         return await _dbSet
             .Where(p => p.IsFeatured && p.IsActive)
-            .Include(p => p.ProductImages.Where(pi => pi.IsPrimary))
+            .Include(p => p.ProductCategories)
+                .ThenInclude(pc => pc.Category)
+            .Include(p => p.ProductVariants)
+            .Include(p => p.ProductImages)
             .ToListAsync();
     }
 
@@ -33,7 +36,10 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
     {
         return await _dbSet
             .Where(p => p.IsActive)
-            .Include(p => p.ProductImages.Where(pi => pi.IsPrimary))
+            .Include(p => p.ProductCategories)
+                .ThenInclude(pc => pc.Category)
+            .Include(p => p.ProductVariants)
+            .Include(p => p.ProductImages)
             .ToListAsync();
     }
 
@@ -41,7 +47,10 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
     {
         return await _dbSet
             .Where(p => p.IsActive && p.ProductCategories.Any(pc => pc.CategoryId == categoryId))
-            .Include(p => p.ProductImages.Where(pi => pi.IsPrimary))
+            .Include(p => p.ProductCategories)
+                .ThenInclude(pc => pc.Category)
+            .Include(p => p.ProductVariants)
+            .Include(p => p.ProductImages)
             .ToListAsync();
     }
 
