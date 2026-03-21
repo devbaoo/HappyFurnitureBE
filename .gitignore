@@ -1,0 +1,24 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Oo]ut/
+
+# User-specific
+*.user
+*.userosscache
+*.suo
+*.cache
+*.log
+.vs/
+.idea/
+
+# Local overrides (may contain secrets)
+**/appsettings.Development.json
+**/appsettings.Local.json

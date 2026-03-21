@@ -1,0 +1,63 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+
+# Source Projects
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2150E333-8FDC-42A3-9474-1A3956D46DE8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyFurnitureBE.API", "src\HappyFurnitureBE.API\HappyFurnitureBE.API.csproj", "{11FD086E-1814-4CC0-B7CD-BF595600D738}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyFurnitureBE.Application", "src\HappyFurnitureBE.Application\HappyFurnitureBE.Application.csproj", "{A1234567-1814-4CC0-B7CD-BF595600D738}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyFurnitureBE.Domain", "src\HappyFurnitureBE.Domain\HappyFurnitureBE.Domain.csproj", "{B1234567-1814-4CC0-B7CD-BF595600D738}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyFurnitureBE.Infrastructure", "src\HappyFurnitureBE.Infrastructure\HappyFurnitureBE.Infrastructure.csproj", "{C1234567-1814-4CC0-B7CD-BF595600D738}"
+EndProject
+
+# Test Projects
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{3150E333-8FDC-42A3-9474-1A3956D46DE8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyFurnitureBE.UnitTests", "tests\HappyFurnitureBE.UnitTests\HappyFurnitureBE.UnitTests.csproj", "{D1234567-1814-4CC0-B7CD-BF595600D738}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyFurnitureBE.IntegrationTests", "tests\HappyFurnitureBE.IntegrationTests\HappyFurnitureBE.IntegrationTests.csproj", "{E1234567-1814-4CC0-B7CD-BF595600D738}"
+EndProject
+
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{11FD086E-1814-4CC0-B7CD-BF595600D738}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11FD086E-1814-4CC0-B7CD-BF595600D738}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11FD086E-1814-4CC0-B7CD-BF595600D738}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11FD086E-1814-4CC0-B7CD-BF595600D738}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1234567-1814-4CC0-B7CD-BF595600D738}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1234567-1814-4CC0-B7CD-BF595600D738}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1234567-1814-4CC0-B7CD-BF595600D738}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1234567-1814-4CC0-B7CD-BF595600D738}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1234567-1814-4CC0-B7CD-BF595600D738}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1234567-1814-4CC0-B7CD-BF595600D738}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1234567-1814-4CC0-B7CD-BF595600D738}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1234567-1814-4CC0-B7CD-BF595600D738}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1234567-1814-4CC0-B7CD-BF595600D738}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1234567-1814-4CC0-B7CD-BF595600D738}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1234567-1814-4CC0-B7CD-BF595600D738}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1234567-1814-4CC0-B7CD-BF595600D738}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1234567-1814-4CC0-B7CD-BF595600D738}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1234567-1814-4CC0-B7CD-BF595600D738}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1234567-1814-4CC0-B7CD-BF595600D738}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1234567-1814-4CC0-B7CD-BF595600D738}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1234567-1814-4CC0-B7CD-BF595600D738}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1234567-1814-4CC0-B7CD-BF595600D738}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1234567-1814-4CC0-B7CD-BF595600D738}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1234567-1814-4CC0-B7CD-BF595600D738}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{11FD086E-1814-4CC0-B7CD-BF595600D738} = {2150E333-8FDC-42A3-9474-1A3956D46DE8}
+		{A1234567-1814-4CC0-B7CD-BF595600D738} = {2150E333-8FDC-42A3-9474-1A3956D46DE8}
+		{B1234567-1814-4CC0-B7CD-BF595600D738} = {2150E333-8FDC-42A3-9474-1A3956D46DE8}
+		{C1234567-1814-4CC0-B7CD-BF595600D738} = {2150E333-8FDC-42A3-9474-1A3956D46DE8}
+		{D1234567-1814-4CC0-B7CD-BF595600D738} = {3150E333-8FDC-42A3-9474-1A3956D46DE8}
+		{E1234567-1814-4CC0-B7CD-BF595600D738} = {3150E333-8FDC-42A3-9474-1A3956D46DE8}
+	EndGlobalSection
+EndGlobal
