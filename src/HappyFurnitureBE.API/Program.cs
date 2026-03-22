@@ -62,6 +62,17 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+// CORS - cho phép tất cả origins
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -112,6 +123,8 @@ app.UseSwaggerUI();
 
 
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 // Add authentication and authorization middleware
 app.UseAuthentication();
