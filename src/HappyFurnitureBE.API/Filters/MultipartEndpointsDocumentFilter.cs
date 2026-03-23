@@ -42,18 +42,28 @@ public class MultipartEndpointsDocumentFilter : IDocumentFilter
             {
                 [OperationType.Post] = CreateMultipartOp(
                     "Tạo product với nhiều ảnh (multipart)",
-                    "Fields: name, description, price, slug, categoryIds (comma-separated, e.g. 1,2,3), images (files)",
+                    "Fields: name, slug, price (bắt buộc). Các field tuỳ chọn: description, oldPrice, dimensionsHeight, dimensionsWidth, dimensionsDepth, dimensionUnit, detail, deliveryInfo, weight, isFeatured, isActive, categoryIds (phân cách bằng dấu phẩy), images (files)",
                     "Products",
                     new Dictionary<string, OpenApiSchema>
                     {
                         ["name"] = new() { Type = "string", Description = "Tên product" },
-                        ["description"] = new() { Type = "string", Nullable = true, Description = "Mô tả" },
-                        ["price"] = new() { Type = "number", Format = "decimal", Description = "Giá" },
                         ["slug"] = new() { Type = "string", Description = "Slug (unique)" },
-                        ["categoryIds"] = new() { Type = "string", Description = "Category IDs, phân cách bằng dấu phẩy (vd: 1,2,3)" },
+                        ["price"] = new() { Type = "number", Format = "decimal", Description = "Giá" },
+                        ["description"] = new() { Type = "string", Nullable = true, Description = "Mô tả ngắn" },
+                        ["oldPrice"] = new() { Type = "number", Format = "decimal", Nullable = true, Description = "Giá cũ (để hiển thị giảm giá)" },
+                        ["dimensionsHeight"] = new() { Type = "number", Format = "decimal", Nullable = true, Description = "Chiều cao" },
+                        ["dimensionsWidth"] = new() { Type = "number", Format = "decimal", Nullable = true, Description = "Chiều rộng" },
+                        ["dimensionsDepth"] = new() { Type = "number", Format = "decimal", Nullable = true, Description = "Chiều sâu" },
+                        ["dimensionUnit"] = new() { Type = "string", Description = "Đơn vị kích thước (mặc định: cm)" },
+                        ["detail"] = new() { Type = "string", Nullable = true, Description = "Mô tả chi tiết" },
+                        ["deliveryInfo"] = new() { Type = "string", Nullable = true, Description = "Thông tin giao hàng" },
+                        ["weight"] = new() { Type = "number", Format = "decimal", Nullable = true, Description = "Trọng lượng" },
+                        ["isFeatured"] = new() { Type = "boolean", Description = "Sản phẩm nổi bật (mặc định: false)" },
+                        ["isActive"] = new() { Type = "boolean", Description = "Trạng thái active (mặc định: true)" },
+                        ["categoryIds"] = new() { Type = "string", Nullable = true, Description = "Category IDs, phân cách bằng dấu phẩy (vd: 1,2,3)" },
                         ["images"] = new() { Type = "array", Items = new OpenApiSchema { Type = "string", Format = "binary" }, Description = "File ảnh (có thể nhiều file)" }
                     },
-                    required: new[] { "name", "slug" })
+                    required: new[] { "name", "slug", "price" })
             }
         };
 
