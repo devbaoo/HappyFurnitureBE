@@ -374,7 +374,23 @@ public class ProductsController : ControllerBase
     [HttpPost("with-images")]
     [Authorize(Roles = "admin")]
     [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<ActionResult<ProductDto>> CreateProductWithImages([FromForm] string name, [FromForm] string? description, [FromForm] decimal price, [FromForm] string slug, [FromForm] string categoryIds, [FromForm] List<IFormFile> images)
+    public async Task<ActionResult<ProductDto>> CreateProductWithImages(
+        [FromForm] string name,
+        [FromForm] string slug,
+        [FromForm] decimal price,
+        [FromForm] string? description,
+        [FromForm] decimal? oldPrice,
+        [FromForm] decimal? dimensionsHeight,
+        [FromForm] decimal? dimensionsWidth,
+        [FromForm] decimal? dimensionsDepth,
+        [FromForm] string dimensionUnit = "cm",
+        [FromForm] string? detail = null,
+        [FromForm] string? deliveryInfo = null,
+        [FromForm] decimal? weight = null,
+        [FromForm] bool isFeatured = false,
+        [FromForm] bool isActive = true,
+        [FromForm] string? categoryIds = null,
+        [FromForm] List<IFormFile>? images = null)
     {
         try
         {
@@ -431,7 +447,16 @@ public class ProductsController : ControllerBase
                 Slug = slug,
                 Description = description,
                 Price = price,
-                IsActive = true,
+                OldPrice = oldPrice,
+                DimensionsHeight = dimensionsHeight,
+                DimensionsWidth = dimensionsWidth,
+                DimensionsDepth = dimensionsDepth,
+                DimensionUnit = dimensionUnit,
+                Detail = detail,
+                DeliveryInfo = deliveryInfo,
+                Weight = weight,
+                IsFeatured = isFeatured,
+                IsActive = isActive,
                 CreatedAt = DateTime.UtcNow
             };
 
