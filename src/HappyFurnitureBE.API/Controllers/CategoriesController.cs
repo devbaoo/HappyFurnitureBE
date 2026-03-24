@@ -30,7 +30,7 @@ public class CategoriesController : ControllerBase
     {
         try
         {
-            var categories = await _categoryRepository.GetAllAsync();
+            var categories = await _categoryRepository.GetAllWithRelationsAsync();
             
             // Apply filters
             var filteredCategories = categories.AsQueryable();
@@ -56,7 +56,7 @@ public class CategoriesController : ControllerBase
             var pagedCategories = filteredCategories
                 .Skip((pagination.PageNumber - 1) * pagination.PageSize)
                 .Take(pagination.PageSize)
-                .Select(c => MapToCategoryDto(c, false))
+                .Select(c => MapToCategoryDto(c, true))
                 .ToList();
 
             var result = new PagedResult<CategoryDto>
@@ -82,7 +82,7 @@ public class CategoriesController : ControllerBase
         try
         {
             var categories = await _categoryRepository.GetRootCategoriesAsync();
-            var categoryDtos = categories.Select(c => MapToCategoryDto(c, false));
+            var categoryDtos = categories.Select(c => MapToCategoryDto(c, true));
             return Ok(categoryDtos);
         }
         catch (Exception ex)
@@ -97,13 +97,13 @@ public class CategoriesController : ControllerBase
     {
         try
         {
-            var category = await _categoryRepository.GetByIdAsync(id);
+            var category = await _categoryRepository.GetByIdWithRelationsAsync(id);
             if (category == null)
             {
                 return NotFound(new { message = "Category not found" });
             }
             
-            return Ok(MapToCategoryDto(category, false));
+            return Ok(MapToCategoryDto(category, true));
         }
         catch (Exception ex)
         {
