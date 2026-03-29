@@ -18,6 +18,7 @@ bld/
 *.log
 .vs/
 .idea/
+.DS_Store
 
 # Local overrides (may contain secrets)
 **/appsettings.Development.json

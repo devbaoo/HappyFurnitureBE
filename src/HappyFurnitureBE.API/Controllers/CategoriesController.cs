@@ -82,7 +82,8 @@ public class CategoriesController : ControllerBase
         try
         {
             var categories = await _categoryRepository.GetRootCategoriesAsync();
-            var categoryDtos = categories.Select(c => MapToCategoryDto(c, true));
+            // Root endpoint should return only parent categories without nested children.
+            var categoryDtos = categories.Select(c => MapToCategoryDto(c, false));
             return Ok(categoryDtos);
         }
         catch (Exception ex)
