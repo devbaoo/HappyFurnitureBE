@@ -1,5 +1,6 @@
 using HappyFurnitureBE.Application.DTOs.Category;
 using HappyFurnitureBE.Application.DTOs.Common;
+using HappyFurnitureBE.Application.DTOs.Material;
 using HappyFurnitureBE.Application.DTOs.Product;
 using HappyFurnitureBE.Application.Interfaces;
 using HappyFurnitureBE.Domain.Entities;
@@ -15,17 +16,20 @@ public class ProductsController : ControllerBase
 {
     private readonly IProductRepository _productRepository;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IMaterialRepository _materialRepository;
     private readonly ICloudinaryService _cloudinaryService;
     private readonly ILogger<ProductsController> _logger;
 
     public ProductsController(
         IProductRepository productRepository,
         ICategoryRepository categoryRepository,
+        IMaterialRepository materialRepository,
         ICloudinaryService cloudinaryService,
         ILogger<ProductsController> logger)
     {
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
+        _materialRepository = materialRepository;
         _cloudinaryService = cloudinaryService;
         _logger = logger;
     }
@@ -67,6 +71,12 @@ public class ProductsController : ControllerBase
             {
                 filteredProducts = filteredProducts.Where(p => 
                     p.ProductCategories.Any(pc => pc.CategoryId == filter.CategoryId));
+            }
+
+            if (filter.MaterialId.HasValue)
+            {
+                filteredProducts = filteredProducts.Where(p => 
+                    p.ProductMaterials.Any(pm => pm.MaterialId == filter.MaterialId));
             }
 
             if (filter.IsFeatured.HasValue)
@@ -229,6 +239,19 @@ public class ProductsController : ControllerBase
                 }
             }
 
+            // Add product materials
+            if (request.MaterialIds.Any())
+            {
+                foreach (var materialId in request.MaterialIds)
+                {
+                    await _productRepository.AddProductMaterialAsync(new ProductMaterial
+                    {
+                        ProductId = createdProduct.Id,
+                        MaterialId = materialId
+                    });
+                }
+            }
+
             // Add product images if provided
             if (request.ImageUrls.Any())
             {
@@ -282,6 +305,16 @@ public class ProductsController : ControllerBase
                 if (category == null)
                 {
                     return BadRequest(new { message = $"Category with ID {categoryId} not found" });
+                }
+            }
+
+            // Validate materials exist
+            foreach (var materialId in request.MaterialIds)
+            {
+                var material = await _materialRepository.GetByIdAsync(materialId);
+                if (material == null)
+                {
+                    return BadRequest(new { message = $"Material with ID {materialId} not found" });
                 }
             }
 
@@ -426,6 +459,10 @@ public class ProductsController : ControllerBase
                 }
             }
 
+            // Parse material IDs from string (comma-separated) if provided
+            var materialIdList = new List<int>();
+            // Note: materialIds parameter would need to be added to the method signature if needed
+
             // Upload images to Cloudinary if provided
             var imageUrls = new List<string>();
             if (images != null && images.Any())
@@ -533,6 +570,15 @@ public class ProductsController : ControllerBase
                 CreatedAt = pc.Category.CreatedAt,
                 UpdatedAt = pc.Category.UpdatedAt
             }).ToList() ?? new List<CategoryDto>(),
+            Materials = product.ProductMaterials?.Select(pm => new MaterialDto
+            {
+                Id = pm.Material.Id,
+                Name = pm.Material.Name,
+                Description = pm.Material.Description,
+                IsActive = pm.Material.IsActive,
+                CreatedAt = pm.Material.CreatedAt,
+                UpdatedAt = pm.Material.UpdatedAt
+            }).ToList() ?? new List<MaterialDto>(),
             Variants = product.ProductVariants?.Select(pv => new ProductVariantDto
             {
                 Id = pv.Id,

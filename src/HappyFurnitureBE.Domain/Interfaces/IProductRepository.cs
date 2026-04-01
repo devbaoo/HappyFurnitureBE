@@ -28,4 +28,7 @@ public interface IProductRepository : IRepository<Product>
     
     // Product Categories
     Task<ProductCategory> AddProductCategoryAsync(ProductCategory productCategory);
+    
+    // Product Materials
+    Task<ProductMaterial> AddProductMaterialAsync(ProductMaterial productMaterial);
 }
