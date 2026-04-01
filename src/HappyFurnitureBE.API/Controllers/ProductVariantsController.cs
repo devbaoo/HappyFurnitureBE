@@ -104,7 +104,6 @@ public class ProductVariantsController : ControllerBase
                 ColorName = request.ColorName,
                 ColorCode = request.ColorCode,
                 ImageUrl = request.ImageUrl,
-                Price = request.Price,
                 IsActive = request.IsActive
             };
 
@@ -135,7 +134,6 @@ public class ProductVariantsController : ControllerBase
             productVariant.ColorName = request.ColorName;
             productVariant.ColorCode = request.ColorCode;
             productVariant.ImageUrl = request.ImageUrl;
-            productVariant.Price = request.Price;
             productVariant.IsActive = request.IsActive;
 
             await _productRepository.UpdateProductVariantAsync(productVariant);
@@ -201,7 +199,7 @@ public class ProductVariantsController : ControllerBase
     [HttpPost("with-image")]
     [Authorize(Roles = "admin")]
     [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<ActionResult<ProductVariantDto>> CreateProductVariantWithImage([FromForm] int productId, [FromForm] string? colorName, [FromForm] string? colorCode, [FromForm] decimal? price, [FromForm] IFormFile? image = null)
+    public async Task<ActionResult<ProductVariantDto>> CreateProductVariantWithImage([FromForm] int productId, [FromForm] string? colorName, [FromForm] string? colorCode, [FromForm] IFormFile? image = null)
     {
         try
         {
@@ -232,7 +230,6 @@ public class ProductVariantsController : ControllerBase
                 ColorName = colorName,
                 ColorCode = colorCode,
                 ImageUrl = imageUrl,
-                Price = price,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };
@@ -258,7 +255,6 @@ public class ProductVariantsController : ControllerBase
             ColorName = productVariant.ColorName,
             ColorCode = productVariant.ColorCode,
             ImageUrl = productVariant.ImageUrl,
-            Price = productVariant.Price,
             IsActive = productVariant.IsActive,
             CreatedAt = productVariant.CreatedAt,
             UpdatedAt = productVariant.UpdatedAt

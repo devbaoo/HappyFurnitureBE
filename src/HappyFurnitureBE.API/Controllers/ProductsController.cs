@@ -595,7 +595,6 @@ public class ProductsController : ControllerBase
                 ColorName = pv.ColorName,
                 ColorCode = pv.ColorCode,
                 ImageUrl = pv.ImageUrl,
-                Price = pv.Price,
                 IsActive = pv.IsActive,
                 CreatedAt = pv.CreatedAt,
                 UpdatedAt = pv.UpdatedAt
