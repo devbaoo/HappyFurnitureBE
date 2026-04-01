@@ -235,7 +235,6 @@ public class ProductVariantDto
     public string? ColorName { get; set; }
     public string? ColorCode { get; set; }
     public string? ImageUrl { get; set; }
-    public decimal? Price { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
@@ -255,9 +254,6 @@ public class CreateProductVariantRequest
     [MaxLength(500, ErrorMessage = "Image URL cannot exceed 500 characters")]
     public string? ImageUrl { get; set; }
 
-    [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
-    public decimal? Price { get; set; }
-
     public bool IsActive { get; set; } = true;
 }
 
@@ -272,9 +268,6 @@ public class CreateProductVariantWithImageRequest
     [MaxLength(7, ErrorMessage = "Color code cannot exceed 7 characters")]
     public string? ColorCode { get; set; }
 
-    [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
-    public decimal? Price { get; set; }
-
     public bool IsActive { get; set; } = true;
 }
 
@@ -288,9 +281,6 @@ public class UpdateProductVariantRequest
 
     [MaxLength(500, ErrorMessage = "Image URL cannot exceed 500 characters")]
     public string? ImageUrl { get; set; }
-
-    [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
-    public decimal? Price { get; set; }
 
     public bool IsActive { get; set; }
 }
