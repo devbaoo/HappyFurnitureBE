@@ -220,6 +220,9 @@ public class ProductsController : ControllerBase
                 Detail = request.Detail,
                 DeliveryInfo = request.DeliveryInfo,
                 Weight = request.Weight,
+                DeliveryHeight = request.DeliveryHeight,
+                DeliveryWidth = request.DeliveryWidth,
+                DeliveryDepth = request.DeliveryDepth,
                 IsFeatured = request.IsFeatured,
                 IsActive = request.IsActive
             };
@@ -331,6 +334,9 @@ public class ProductsController : ControllerBase
             product.Detail = request.Detail;
             product.DeliveryInfo = request.DeliveryInfo;
             product.Weight = request.Weight;
+            product.DeliveryHeight = request.DeliveryHeight;
+            product.DeliveryWidth = request.DeliveryWidth;
+            product.DeliveryDepth = request.DeliveryDepth;
             product.IsFeatured = request.IsFeatured;
             product.IsActive = request.IsActive;
 
@@ -420,6 +426,9 @@ public class ProductsController : ControllerBase
         [FromForm] string? detail = null,
         [FromForm] string? deliveryInfo = null,
         [FromForm] decimal? weight = null,
+        [FromForm] decimal? deliveryHeight = null,
+        [FromForm] decimal? deliveryWidth = null,
+        [FromForm] decimal? deliveryDepth = null,
         [FromForm] bool isFeatured = false,
         [FromForm] bool isActive = true,
         [FromForm] string? categoryIds = null,
@@ -492,6 +501,9 @@ public class ProductsController : ControllerBase
                 Detail = detail,
                 DeliveryInfo = deliveryInfo,
                 Weight = weight,
+                DeliveryHeight = deliveryHeight,
+                DeliveryWidth = deliveryWidth,
+                DeliveryDepth = deliveryDepth,
                 IsFeatured = isFeatured,
                 IsActive = isActive,
                 CreatedAt = DateTime.UtcNow
@@ -556,6 +568,9 @@ public class ProductsController : ControllerBase
             Detail = product.Detail,
             DeliveryInfo = product.DeliveryInfo,
             Weight = product.Weight,
+            DeliveryHeight = product.DeliveryHeight,
+            DeliveryWidth = product.DeliveryWidth,
+            DeliveryDepth = product.DeliveryDepth,
             IsFeatured = product.IsFeatured,
             IsActive = product.IsActive,
             CreatedAt = product.CreatedAt,

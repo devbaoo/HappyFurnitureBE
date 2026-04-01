@@ -19,6 +19,9 @@ public class ProductDto
     public string? Detail { get; set; }
     public string? DeliveryInfo { get; set; }
     public decimal? Weight { get; set; }
+    public decimal? DeliveryHeight { get; set; }
+    public decimal? DeliveryWidth { get; set; }
+    public decimal? DeliveryDepth { get; set; }
     public bool IsFeatured { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
@@ -68,6 +71,15 @@ public class CreateProductRequest
     [Range(0, double.MaxValue, ErrorMessage = "Weight must be non-negative")]
     public decimal? Weight { get; set; }
 
+    [Range(0, double.MaxValue, ErrorMessage = "Delivery height must be non-negative")]
+    public decimal? DeliveryHeight { get; set; }
+
+    [Range(0, double.MaxValue, ErrorMessage = "Delivery width must be non-negative")]
+    public decimal? DeliveryWidth { get; set; }
+
+    [Range(0, double.MaxValue, ErrorMessage = "Delivery depth must be non-negative")]
+    public decimal? DeliveryDepth { get; set; }
+
     public bool IsFeatured { get; set; } = false;
     public bool IsActive { get; set; } = true;
 
@@ -115,6 +127,15 @@ public class CreateProductWithImagesRequest
     [Range(0, double.MaxValue, ErrorMessage = "Weight must be non-negative")]
     public decimal? Weight { get; set; }
 
+    [Range(0, double.MaxValue, ErrorMessage = "Delivery height must be non-negative")]
+    public decimal? DeliveryHeight { get; set; }
+
+    [Range(0, double.MaxValue, ErrorMessage = "Delivery width must be non-negative")]
+    public decimal? DeliveryWidth { get; set; }
+
+    [Range(0, double.MaxValue, ErrorMessage = "Delivery depth must be non-negative")]
+    public decimal? DeliveryDepth { get; set; }
+
     public bool IsFeatured { get; set; } = false;
     public bool IsActive { get; set; } = true;
 
@@ -158,6 +179,15 @@ public class UpdateProductRequest
 
     [Range(0, double.MaxValue, ErrorMessage = "Weight must be non-negative")]
     public decimal? Weight { get; set; }
+
+    [Range(0, double.MaxValue, ErrorMessage = "Delivery height must be non-negative")]
+    public decimal? DeliveryHeight { get; set; }
+
+    [Range(0, double.MaxValue, ErrorMessage = "Delivery width must be non-negative")]
+    public decimal? DeliveryWidth { get; set; }
+
+    [Range(0, double.MaxValue, ErrorMessage = "Delivery depth must be non-negative")]
+    public decimal? DeliveryDepth { get; set; }
 
     public bool IsFeatured { get; set; }
     public bool IsActive { get; set; }
