@@ -10,8 +10,6 @@ public class ProductDto
     public string Name { get; set; } = string.Empty;
     public string Slug { get; set; } = string.Empty;
     public string? Description { get; set; }
-    public decimal Price { get; set; }
-    public decimal? OldPrice { get; set; }
     public decimal? DimensionsHeight { get; set; }
     public decimal? DimensionsWidth { get; set; }
     public decimal? DimensionsDepth { get; set; }
@@ -45,13 +43,6 @@ public class CreateProductRequest
     public string Slug { get; set; } = string.Empty;
 
     public string? Description { get; set; }
-
-    [Required(ErrorMessage = "Price is required")]
-    [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
-    public decimal Price { get; set; }
-
-    [Range(0.01, double.MaxValue, ErrorMessage = "Old price must be greater than 0")]
-    public decimal? OldPrice { get; set; }
 
     [Range(0, double.MaxValue, ErrorMessage = "Height must be non-negative")]
     public decimal? DimensionsHeight { get; set; }
@@ -102,13 +93,6 @@ public class CreateProductWithImagesRequest
 
     public string? Description { get; set; }
 
-    [Required(ErrorMessage = "Price is required")]
-    [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
-    public decimal Price { get; set; }
-
-    [Range(0.01, double.MaxValue, ErrorMessage = "Old price must be greater than 0")]
-    public decimal? OldPrice { get; set; }
-
     [Range(0, double.MaxValue, ErrorMessage = "Height must be non-negative")]
     public decimal? DimensionsHeight { get; set; }
 
@@ -155,13 +139,6 @@ public class UpdateProductRequest
 
     public string? Description { get; set; }
 
-    [Required(ErrorMessage = "Price is required")]
-    [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
-    public decimal Price { get; set; }
-
-    [Range(0.01, double.MaxValue, ErrorMessage = "Old price must be greater than 0")]
-    public decimal? OldPrice { get; set; }
-
     [Range(0, double.MaxValue, ErrorMessage = "Height must be non-negative")]
     public decimal? DimensionsHeight { get; set; }
 
@@ -200,13 +177,11 @@ public class ProductFilterParams
 {
     public string? Name { get; set; }
     public string? Slug { get; set; }
-    public decimal? MinPrice { get; set; }
-    public decimal? MaxPrice { get; set; }
     public int? CategoryId { get; set; }
     public int? MaterialId { get; set; }
     public bool? IsFeatured { get; set; }
     public bool? IsActive { get; set; }
-    public string? SortBy { get; set; } = "CreatedAt"; // Name, Price, CreatedAt
+    public string? SortBy { get; set; } = "CreatedAt"; // Name, CreatedAt
     public string? SortOrder { get; set; } = "desc"; // asc, desc
 }
 

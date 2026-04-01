@@ -57,16 +57,6 @@ public class ProductsController : ControllerBase
                     p.Slug.Contains(filter.Slug, StringComparison.OrdinalIgnoreCase));
             }
 
-            if (filter.MinPrice.HasValue)
-            {
-                filteredProducts = filteredProducts.Where(p => p.Price >= filter.MinPrice);
-            }
-
-            if (filter.MaxPrice.HasValue)
-            {
-                filteredProducts = filteredProducts.Where(p => p.Price <= filter.MaxPrice);
-            }
-
             if (filter.CategoryId.HasValue)
             {
                 filteredProducts = filteredProducts.Where(p => 
@@ -95,9 +85,6 @@ public class ProductsController : ControllerBase
                 "name" => filter.SortOrder?.ToLower() == "desc" 
                     ? filteredProducts.OrderByDescending(p => p.Name)
                     : filteredProducts.OrderBy(p => p.Name),
-                "price" => filter.SortOrder?.ToLower() == "desc"
-                    ? filteredProducts.OrderByDescending(p => p.Price)
-                    : filteredProducts.OrderBy(p => p.Price),
                 _ => filter.SortOrder?.ToLower() == "asc"
                     ? filteredProducts.OrderBy(p => p.CreatedAt)
                     : filteredProducts.OrderByDescending(p => p.CreatedAt)
@@ -211,8 +198,6 @@ public class ProductsController : ControllerBase
                 Name = request.Name,
                 Slug = request.Slug,
                 Description = request.Description,
-                Price = request.Price,
-                OldPrice = request.OldPrice,
                 DimensionsHeight = request.DimensionsHeight,
                 DimensionsWidth = request.DimensionsWidth,
                 DimensionsDepth = request.DimensionsDepth,
@@ -325,8 +310,6 @@ public class ProductsController : ControllerBase
             product.Name = request.Name;
             product.Slug = request.Slug;
             product.Description = request.Description;
-            product.Price = request.Price;
-            product.OldPrice = request.OldPrice;
             product.DimensionsHeight = request.DimensionsHeight;
             product.DimensionsWidth = request.DimensionsWidth;
             product.DimensionsDepth = request.DimensionsDepth;
@@ -416,9 +399,7 @@ public class ProductsController : ControllerBase
     public async Task<ActionResult<ProductDto>> CreateProductWithImages(
         [FromForm] string name,
         [FromForm] string slug,
-        [FromForm] decimal price,
         [FromForm] string? description,
-        [FromForm] decimal? oldPrice,
         [FromForm] decimal? dimensionsHeight,
         [FromForm] decimal? dimensionsWidth,
         [FromForm] decimal? dimensionsDepth,
@@ -492,8 +473,6 @@ public class ProductsController : ControllerBase
                 Name = name,
                 Slug = slug,
                 Description = description,
-                Price = price,
-                OldPrice = oldPrice,
                 DimensionsHeight = dimensionsHeight,
                 DimensionsWidth = dimensionsWidth,
                 DimensionsDepth = dimensionsDepth,
@@ -559,8 +538,6 @@ public class ProductsController : ControllerBase
             Name = product.Name,
             Slug = product.Slug,
             Description = product.Description,
-            Price = product.Price,
-            OldPrice = product.OldPrice,
             DimensionsHeight = product.DimensionsHeight,
             DimensionsWidth = product.DimensionsWidth,
             DimensionsDepth = product.DimensionsDepth,
