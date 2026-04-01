@@ -40,6 +40,15 @@ public class Product : BaseEntity
     [Column(TypeName = "decimal(10,2)")]
     public decimal? Weight { get; set; }
 
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal? DeliveryHeight { get; set; }
+
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal? DeliveryWidth { get; set; }
+
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal? DeliveryDepth { get; set; }
+
     public bool IsFeatured { get; set; } = false;
 
     public bool IsActive { get; set; } = true;
