@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using HappyFurnitureBE.Application.DTOs.Category;
+using HappyFurnitureBE.Application.DTOs.Material;
 
 namespace HappyFurnitureBE.Application.DTOs.Product;
 
@@ -25,6 +26,7 @@ public class ProductDto
 
     // Navigation properties
     public List<CategoryDto> Categories { get; set; } = new();
+    public List<MaterialDto> Materials { get; set; } = new();
     public List<ProductVariantDto> Variants { get; set; } = new();
     public List<ProductImageDto> Images { get; set; } = new();
 }
@@ -70,6 +72,7 @@ public class CreateProductRequest
     public bool IsActive { get; set; } = true;
 
     public List<int> CategoryIds { get; set; } = new();
+    public List<int> MaterialIds { get; set; } = new();
     
     // Image URLs (có thể từ upload trước đó)
     public List<string> ImageUrls { get; set; } = new();
@@ -116,6 +119,7 @@ public class CreateProductWithImagesRequest
     public bool IsActive { get; set; } = true;
 
     public List<int> CategoryIds { get; set; } = new();
+    public List<int> MaterialIds { get; set; } = new();
 }
 
 public class UpdateProductRequest
@@ -159,6 +163,7 @@ public class UpdateProductRequest
     public bool IsActive { get; set; }
 
     public List<int> CategoryIds { get; set; } = new();
+    public List<int> MaterialIds { get; set; } = new();
 }
 
 public class ProductFilterParams
@@ -168,6 +173,7 @@ public class ProductFilterParams
     public decimal? MinPrice { get; set; }
     public decimal? MaxPrice { get; set; }
     public int? CategoryId { get; set; }
+    public int? MaterialId { get; set; }
     public bool? IsFeatured { get; set; }
     public bool? IsActive { get; set; }
     public string? SortBy { get; set; } = "CreatedAt"; // Name, Price, CreatedAt

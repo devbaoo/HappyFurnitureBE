@@ -46,6 +46,7 @@ public class Product : BaseEntity
 
     // Navigation properties
     public ICollection<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
+    public ICollection<ProductMaterial> ProductMaterials { get; set; } = new List<ProductMaterial>();
     public ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
     public ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
 }

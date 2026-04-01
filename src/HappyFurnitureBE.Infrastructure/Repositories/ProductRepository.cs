@@ -16,6 +16,8 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
         return await _dbSet
             .Include(p => p.ProductCategories)
                 .ThenInclude(pc => pc.Category)
+            .Include(p => p.ProductMaterials)
+                .ThenInclude(pm => pm.Material)
             .Include(p => p.ProductVariants)
             .Include(p => p.ProductImages)
             .FirstOrDefaultAsync(p => p.Slug == slug);
@@ -27,6 +29,8 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
             .Where(p => p.IsFeatured && p.IsActive)
             .Include(p => p.ProductCategories)
                 .ThenInclude(pc => pc.Category)
+            .Include(p => p.ProductMaterials)
+                .ThenInclude(pm => pm.Material)
             .Include(p => p.ProductVariants)
             .Include(p => p.ProductImages)
             .ToListAsync();
@@ -38,6 +42,8 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
             .Where(p => p.IsActive)
             .Include(p => p.ProductCategories)
                 .ThenInclude(pc => pc.Category)
+            .Include(p => p.ProductMaterials)
+                .ThenInclude(pm => pm.Material)
             .Include(p => p.ProductVariants)
             .Include(p => p.ProductImages)
             .ToListAsync();
@@ -49,6 +55,8 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
             .Where(p => p.IsActive && p.ProductCategories.Any(pc => pc.CategoryId == categoryId))
             .Include(p => p.ProductCategories)
                 .ThenInclude(pc => pc.Category)
+            .Include(p => p.ProductMaterials)
+                .ThenInclude(pm => pm.Material)
             .Include(p => p.ProductVariants)
             .Include(p => p.ProductImages)
             .ToListAsync();
@@ -59,6 +67,8 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
         return await _dbSet
             .Include(p => p.ProductCategories)
                 .ThenInclude(pc => pc.Category)
+            .Include(p => p.ProductMaterials)
+                .ThenInclude(pm => pm.Material)
             .Include(p => p.ProductVariants)
             .Include(p => p.ProductImages)
             .FirstOrDefaultAsync(p => p.Id == id);
@@ -165,5 +175,13 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
         _context.ProductCategories.Add(productCategory);
         await _context.SaveChangesAsync();
         return productCategory;
+    }
+
+    // Product Materials
+    public async Task<ProductMaterial> AddProductMaterialAsync(ProductMaterial productMaterial)
+    {
+        _context.ProductMaterials.Add(productMaterial);
+        await _context.SaveChangesAsync();
+        return productMaterial;
     }
 }
