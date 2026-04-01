@@ -15,12 +15,6 @@ public class Product : BaseEntity
 
     public string? Description { get; set; }
 
-    [Column(TypeName = "decimal(18,2)")]
-    public decimal Price { get; set; }
-
-    [Column(TypeName = "decimal(18,2)")]
-    public decimal? OldPrice { get; set; }
-
     [Column(TypeName = "decimal(10,2)")]
     public decimal? DimensionsHeight { get; set; }
 
