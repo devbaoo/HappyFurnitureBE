@@ -193,6 +193,16 @@ public class ProductsController : ControllerBase
                 }
             }
 
+            // Validate materials exist
+            foreach (var materialId in request.MaterialIds)
+            {
+                var material = await _materialRepository.GetByIdAsync(materialId);
+                if (material == null)
+                {
+                    return BadRequest(new { message = $"Material with ID {materialId} not found" });
+                }
+            }
+
             var product = new Product
             {
                 Name = request.Name,
@@ -257,7 +267,8 @@ public class ProductsController : ControllerBase
                 }
             }
 
-            var productDto = MapToProductDto(createdProduct);
+            var createdProductWithDetails = await _productRepository.GetProductWithDetailsAsync(createdProduct.Id);
+            var productDto = MapToProductDto(createdProductWithDetails ?? createdProduct);
             return CreatedAtAction(nameof(GetProduct), new { id = createdProduct.Id }, productDto);
         }
         catch (Exception ex)
@@ -325,7 +336,8 @@ public class ProductsController : ControllerBase
 
             await _productRepository.UpdateAsync(product);
 
-            var productDto = MapToProductDto(product);
+            var updatedProductWithDetails = await _productRepository.GetProductWithDetailsAsync(product.Id);
+            var productDto = MapToProductDto(updatedProductWithDetails ?? product);
             return Ok(productDto);
         }
         catch (Exception ex)
@@ -520,7 +532,8 @@ public class ProductsController : ControllerBase
                 }
             }
 
-            var productDto = MapToProductDto(createdProduct);
+            var createdProductWithDetails = await _productRepository.GetProductWithDetailsAsync(createdProduct.Id);
+            var productDto = MapToProductDto(createdProductWithDetails ?? createdProduct);
             return CreatedAtAction(nameof(GetProduct), new { id = createdProduct.Id }, productDto);
         }
         catch (Exception ex)
@@ -552,7 +565,9 @@ public class ProductsController : ControllerBase
             IsActive = product.IsActive,
             CreatedAt = product.CreatedAt,
             UpdatedAt = product.UpdatedAt,
-            Categories = product.ProductCategories?.Select(pc => new CategoryDto
+            Categories = product.ProductCategories?
+                .Where(pc => pc.Category != null)
+                .Select(pc => new CategoryDto
             {
                 Id = pc.Category.Id,
                 Name = pc.Category.Name,
@@ -562,7 +577,9 @@ public class ProductsController : ControllerBase
                 CreatedAt = pc.Category.CreatedAt,
                 UpdatedAt = pc.Category.UpdatedAt
             }).ToList() ?? new List<CategoryDto>(),
-            Materials = product.ProductMaterials?.Select(pm => new MaterialDto
+            Materials = product.ProductMaterials?
+                .Where(pm => pm.Material != null)
+                .Select(pm => new MaterialDto
             {
                 Id = pm.Material.Id,
                 Name = pm.Material.Name,
