@@ -82,8 +82,11 @@ public class CategoriesController : ControllerBase
         try
         {
             var categories = await _categoryRepository.GetRootCategoriesAsync();
-            // Root endpoint should return only parent categories without nested children.
-            var categoryDtos = categories.Select(c => MapToCategoryDto(c, false));
+            // Sort root categories by SortOrder (null values go last), then by Id
+            var categoryDtos = categories
+                .OrderBy(c => c.SortOrder ?? int.MaxValue)
+                .ThenBy(c => c.Id)
+                .Select(c => MapToCategoryDto(c, false));
             return Ok(categoryDtos);
         }
         catch (Exception ex)
@@ -134,7 +137,9 @@ public class CategoriesController : ControllerBase
                 Name = request.Name,
                 ImageUrl = request.ImageUrl,
                 ParentId = request.ParentId,
-                IsActive = request.IsActive
+                IsActive = request.IsActive,
+                // SortOrder chỉ áp dụng cho root category (không có ParentId)
+                SortOrder = request.ParentId == null ? request.SortOrder : null
             };
 
             var createdCategory = await _categoryRepository.AddAsync(category);
@@ -181,6 +186,8 @@ public class CategoriesController : ControllerBase
             category.ImageUrl = request.ImageUrl;
             category.ParentId = request.ParentId;
             category.IsActive = request.IsActive;
+            // SortOrder chỉ áp dụng cho root category (không có ParentId)
+            category.SortOrder = request.ParentId == null ? request.SortOrder : null;
 
             await _categoryRepository.UpdateAsync(category);
             var categoryDto = MapToCategoryDto(category, false);
@@ -225,12 +232,12 @@ public class CategoriesController : ControllerBase
 
     /// <summary>
     /// Tạo category với ảnh - dùng multipart/form-data.
-    /// Field: name (required), parentId (optional, số), isActive (optional, true/false), image (optional, file)
+    /// Field: name (required), parentId (optional, số), sortOrder (optional, số thứ tự - chỉ dùng cho root category), isActive (optional, true/false), image (optional, file)
     /// </summary>
     [HttpPost("with-image")]
     [Authorize(Roles = "admin")]
     [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<ActionResult<CategoryDto>> CreateCategoryWithImage([FromForm] string name, [FromForm] int? parentId, [FromForm] bool isActive = true, [FromForm] IFormFile? image = null)
+    public async Task<ActionResult<CategoryDto>> CreateCategoryWithImage([FromForm] string name, [FromForm] int? parentId, [FromForm] int? sortOrder = null, [FromForm] bool isActive = true, [FromForm] IFormFile? image = null)
     {
         try
         {
@@ -265,6 +272,8 @@ public class CategoriesController : ControllerBase
                 ImageUrl = imageUrl,
                 ParentId = parentId,
                 IsActive = isActive,
+                // SortOrder chỉ áp dụng cho root category (không có ParentId)
+                SortOrder = parentId == null ? sortOrder : null,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -288,6 +297,8 @@ public class CategoriesController : ControllerBase
             Name = category.Name,
             ImageUrl = category.ImageUrl,
             ParentId = category.ParentId,
+            // SortOrder chỉ trả về với root category (ParentId == null)
+            SortOrder = category.ParentId == null ? category.SortOrder : null,
             IsActive = category.IsActive,
             CreatedAt = category.CreatedAt,
             UpdatedAt = category.UpdatedAt,

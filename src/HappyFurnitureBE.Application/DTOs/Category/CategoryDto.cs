@@ -8,6 +8,8 @@ public class CategoryDto
     public string Name { get; set; } = string.Empty;
     public string? ImageUrl { get; set; }
     public int? ParentId { get; set; }
+    /// <summary>Số thứ tự - chỉ có giá trị với root category</summary>
+    public int? SortOrder { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
@@ -28,6 +30,9 @@ public class CreateCategoryRequest
 
     public int? ParentId { get; set; }
 
+    /// <summary>Số thứ tự hiển thị - chỉ dùng cho root category (khi ParentId == null)</summary>
+    public int? SortOrder { get; set; }
+
     public bool IsActive { get; set; } = true;
 }
 
@@ -38,6 +43,9 @@ public class CreateCategoryWithImageRequest
     public string Name { get; set; } = string.Empty;
 
     public int? ParentId { get; set; }
+
+    /// <summary>Số thứ tự hiển thị - chỉ dùng cho root category (khi ParentId == null)</summary>
+    public int? SortOrder { get; set; }
 
     public bool IsActive { get; set; } = true;
 }
@@ -52,6 +60,9 @@ public class UpdateCategoryRequest
     public string? ImageUrl { get; set; }
 
     public int? ParentId { get; set; }
+
+    /// <summary>Số thứ tự hiển thị - chỉ dùng cho root category (khi ParentId == null)</summary>
+    public int? SortOrder { get; set; }
 
     public bool IsActive { get; set; }
 }

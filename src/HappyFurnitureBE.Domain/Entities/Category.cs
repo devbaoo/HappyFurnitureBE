@@ -13,6 +13,12 @@ public class Category : BaseEntity
 
     public int? ParentId { get; set; }
 
+    /// <summary>
+    /// Số thứ tự hiển thị - chỉ dùng cho root category (ParentId == null).
+    /// Dùng để sắp xếp thứ tự hiển thị các category cha.
+    /// </summary>
+    public int? SortOrder { get; set; }
+
     public bool IsActive { get; set; } = true;
 
     // Navigation properties
