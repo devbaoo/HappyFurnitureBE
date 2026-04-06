@@ -2,6 +2,8 @@ using System.Text;
 using HappyFurnitureBE.API.Filters;
 using HappyFurnitureBE.Application.Interfaces;
 using HappyFurnitureBE.Application.Services.Auth;
+using HappyFurnitureBE.Application.Services.Contact;
+using HappyFurnitureBE.Application.Services.Recaptcha;
 using HappyFurnitureBE.Application.Services.Upload;
 using HappyFurnitureBE.Domain.Interfaces;
 using HappyFurnitureBE.Infrastructure.Data;
@@ -30,10 +32,13 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
+builder.Services.AddScoped<IContactRepository, ContactRepository>();
 
 // Register services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+builder.Services.AddScoped<IContactService, ContactService>();
+builder.Services.AddHttpClient<IRecaptchaService, RecaptchaService>();
 
 // JWT Configuration
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
