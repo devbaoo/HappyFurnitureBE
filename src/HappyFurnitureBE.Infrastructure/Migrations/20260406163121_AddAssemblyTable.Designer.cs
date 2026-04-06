@@ -3,6 +3,7 @@ using System;
 using HappyFurnitureBE.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HappyFurnitureBE.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260406163121_AddAssemblyTable")]
+    partial class AddAssemblyTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,12 +77,6 @@ namespace HappyFurnitureBE.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DescriptionEn")
-                        .HasColumnType("text");
-
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -89,10 +86,6 @@ namespace HappyFurnitureBE.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("NameEn")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
@@ -222,22 +215,13 @@ namespace HappyFurnitureBE.Infrastructure.Migrations
                     b.Property<string>("DeliveryInfo")
                         .HasColumnType("text");
 
-                    b.Property<string>("DeliveryInfoEn")
-                        .HasColumnType("text");
-
                     b.Property<decimal?>("DeliveryWidth")
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<string>("DescriptionEn")
-                        .HasColumnType("text");
-
                     b.Property<string>("Detail")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DetailEn")
                         .HasColumnType("text");
 
                     b.Property<string>("DimensionUnit")
@@ -262,10 +246,6 @@ namespace HappyFurnitureBE.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("NameEn")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
