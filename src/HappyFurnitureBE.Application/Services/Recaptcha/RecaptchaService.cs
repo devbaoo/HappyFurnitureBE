@@ -10,12 +10,14 @@ public class RecaptchaService : IRecaptchaService
     private readonly string _secretKey;
     private readonly double _minScore;
 
+
     public RecaptchaService(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
         _secretKey = configuration["Recaptcha:SecretKey"]
             ?? throw new InvalidOperationException("Recaptcha:SecretKey is not configured.");
         _minScore = configuration.GetValue<double>("Recaptcha:MinScore", 0.5);
+
     }
 
     public async Task<bool> VerifyTokenAsync(string token)
@@ -42,5 +44,6 @@ public class RecaptchaService : IRecaptchaService
             return scoreProp.GetDouble() >= _minScore;
 
         return true;
+
     }
 }
