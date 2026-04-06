@@ -6,6 +6,9 @@ public class CategoryDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
+    public string? NameEn { get; set; }
+    public string? Description { get; set; }
+    public string? DescriptionEn { get; set; }
     public string? ImageUrl { get; set; }
     public int? ParentId { get; set; }
     /// <summary>Số thứ tự - chỉ có giá trị với root category</summary>
@@ -13,7 +16,7 @@ public class CategoryDto
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-    
+
     // Navigation properties
     public CategoryDto? Parent { get; set; }
     public List<CategoryDto> Children { get; set; } = new();
@@ -24,6 +27,13 @@ public class CreateCategoryRequest
     [Required(ErrorMessage = "Name is required")]
     [MaxLength(255, ErrorMessage = "Name cannot exceed 255 characters")]
     public string Name { get; set; } = string.Empty;
+
+    [MaxLength(255, ErrorMessage = "Name (EN) cannot exceed 255 characters")]
+    public string? NameEn { get; set; }
+
+    public string? Description { get; set; }
+
+    public string? DescriptionEn { get; set; }
 
     [MaxLength(500, ErrorMessage = "Image URL cannot exceed 500 characters")]
     public string? ImageUrl { get; set; }
@@ -42,6 +52,13 @@ public class CreateCategoryWithImageRequest
     [MaxLength(255, ErrorMessage = "Name cannot exceed 255 characters")]
     public string Name { get; set; } = string.Empty;
 
+    [MaxLength(255, ErrorMessage = "Name (EN) cannot exceed 255 characters")]
+    public string? NameEn { get; set; }
+
+    public string? Description { get; set; }
+
+    public string? DescriptionEn { get; set; }
+
     public int? ParentId { get; set; }
 
     /// <summary>Số thứ tự hiển thị - chỉ dùng cho root category (khi ParentId == null)</summary>
@@ -55,6 +72,13 @@ public class UpdateCategoryRequest
     [Required(ErrorMessage = "Name is required")]
     [MaxLength(255, ErrorMessage = "Name cannot exceed 255 characters")]
     public string Name { get; set; } = string.Empty;
+
+    [MaxLength(255, ErrorMessage = "Name (EN) cannot exceed 255 characters")]
+    public string? NameEn { get; set; }
+
+    public string? Description { get; set; }
+
+    public string? DescriptionEn { get; set; }
 
     [MaxLength(500, ErrorMessage = "Image URL cannot exceed 500 characters")]
     public string? ImageUrl { get; set; }

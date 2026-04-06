@@ -9,11 +9,16 @@ public class Product : BaseEntity
     [MaxLength(255)]
     public string Name { get; set; } = string.Empty;
 
+    [MaxLength(255)]
+    public string? NameEn { get; set; }
+
     [Required]
     [MaxLength(255)]
     public string Slug { get; set; } = string.Empty;
 
     public string? Description { get; set; }
+
+    public string? DescriptionEn { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal? DimensionsHeight { get; set; }
@@ -29,7 +34,11 @@ public class Product : BaseEntity
 
     public string? Detail { get; set; }
 
+    public string? DetailEn { get; set; }
+
     public string? DeliveryInfo { get; set; }
+
+    public string? DeliveryInfoEn { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal? Weight { get; set; }
@@ -46,6 +55,9 @@ public class Product : BaseEntity
     public bool IsFeatured { get; set; } = false;
 
     public bool IsActive { get; set; } = true;
+
+    public int? AssemblyId { get; set; }
+    public Assembly? Assembly { get; set; }
 
     // Navigation properties
     public ICollection<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();

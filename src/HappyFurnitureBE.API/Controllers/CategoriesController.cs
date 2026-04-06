@@ -135,6 +135,9 @@ public class CategoriesController : ControllerBase
             var category = new Category
             {
                 Name = request.Name,
+                NameEn = request.NameEn,
+                Description = request.Description,
+                DescriptionEn = request.DescriptionEn,
                 ImageUrl = request.ImageUrl,
                 ParentId = request.ParentId,
                 IsActive = request.IsActive,
@@ -144,7 +147,7 @@ public class CategoriesController : ControllerBase
 
             var createdCategory = await _categoryRepository.AddAsync(category);
             var categoryDto = MapToCategoryDto(createdCategory, false);
-            
+
             return CreatedAtAction(nameof(GetCategory), new { id = createdCategory.Id }, categoryDto);
         }
         catch (Exception ex)
@@ -183,6 +186,9 @@ public class CategoriesController : ControllerBase
             }
 
             category.Name = request.Name;
+            category.NameEn = request.NameEn;
+            category.Description = request.Description;
+            category.DescriptionEn = request.DescriptionEn;
             category.ImageUrl = request.ImageUrl;
             category.ParentId = request.ParentId;
             category.IsActive = request.IsActive;
@@ -237,7 +243,7 @@ public class CategoriesController : ControllerBase
     [HttpPost("with-image")]
     [Authorize(Roles = "admin")]
     [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<ActionResult<CategoryDto>> CreateCategoryWithImage([FromForm] string name, [FromForm] int? parentId, [FromForm] int? sortOrder = null, [FromForm] bool isActive = true, [FromForm] IFormFile? image = null)
+    public async Task<ActionResult<CategoryDto>> CreateCategoryWithImage([FromForm] string name, [FromForm] string? nameEn = null, [FromForm] string? description = null, [FromForm] string? descriptionEn = null, [FromForm] int? parentId = null, [FromForm] int? sortOrder = null, [FromForm] bool isActive = true, [FromForm] IFormFile? image = null)
     {
         try
         {
@@ -269,6 +275,9 @@ public class CategoriesController : ControllerBase
             var category = new Category
             {
                 Name = name,
+                NameEn = nameEn,
+                Description = description,
+                DescriptionEn = descriptionEn,
                 ImageUrl = imageUrl,
                 ParentId = parentId,
                 IsActive = isActive,
@@ -295,6 +304,9 @@ public class CategoriesController : ControllerBase
         {
             Id = category.Id,
             Name = category.Name,
+            NameEn = category.NameEn,
+            Description = category.Description,
+            DescriptionEn = category.DescriptionEn,
             ImageUrl = category.ImageUrl,
             ParentId = category.ParentId,
             // SortOrder chỉ trả về với root category (ParentId == null)
@@ -302,11 +314,11 @@ public class CategoriesController : ControllerBase
             IsActive = category.IsActive,
             CreatedAt = category.CreatedAt,
             UpdatedAt = category.UpdatedAt,
-            Parent = includeRelations && category.Parent != null 
-                ? MapToCategoryDto(category.Parent, false) 
+            Parent = includeRelations && category.Parent != null
+                ? MapToCategoryDto(category.Parent, false)
                 : null,
-            Children = includeRelations && category.Children != null 
-                ? category.Children.Select(c => MapToCategoryDto(c, false)).ToList() 
+            Children = includeRelations && category.Children != null
+                ? category.Children.Select(c => MapToCategoryDto(c, false)).ToList()
                 : new List<CategoryDto>()
         };
     }

@@ -8,6 +8,13 @@ public class Category : BaseEntity
     [MaxLength(255)]
     public string Name { get; set; } = string.Empty;
 
+    [MaxLength(255)]
+    public string? NameEn { get; set; }
+
+    public string? Description { get; set; }
+
+    public string? DescriptionEn { get; set; }
+
     [MaxLength(500)]
     public string? ImageUrl { get; set; }
 

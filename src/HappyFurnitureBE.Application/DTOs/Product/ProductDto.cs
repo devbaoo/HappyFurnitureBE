@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using HappyFurnitureBE.Application.DTOs.Assembly;
 using HappyFurnitureBE.Application.DTOs.Category;
 using HappyFurnitureBE.Application.DTOs.Material;
 
@@ -8,20 +9,26 @@ public class ProductDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
+    public string? NameEn { get; set; }
     public string Slug { get; set; } = string.Empty;
     public string? Description { get; set; }
+    public string? DescriptionEn { get; set; }
     public decimal? DimensionsHeight { get; set; }
     public decimal? DimensionsWidth { get; set; }
     public decimal? DimensionsDepth { get; set; }
     public string DimensionUnit { get; set; } = "cm";
     public string? Detail { get; set; }
+    public string? DetailEn { get; set; }
     public string? DeliveryInfo { get; set; }
+    public string? DeliveryInfoEn { get; set; }
     public decimal? Weight { get; set; }
     public decimal? DeliveryHeight { get; set; }
     public decimal? DeliveryWidth { get; set; }
     public decimal? DeliveryDepth { get; set; }
     public bool IsFeatured { get; set; }
     public bool IsActive { get; set; }
+    public int? AssemblyId { get; set; }
+    public AssemblyDto? Assembly { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
@@ -38,11 +45,15 @@ public class CreateProductRequest
     [MaxLength(255, ErrorMessage = "Name cannot exceed 255 characters")]
     public string Name { get; set; } = string.Empty;
 
+    [MaxLength(255, ErrorMessage = "Name (EN) cannot exceed 255 characters")]
+    public string? NameEn { get; set; }
+
     [Required(ErrorMessage = "Slug is required")]
     [MaxLength(255, ErrorMessage = "Slug cannot exceed 255 characters")]
     public string Slug { get; set; } = string.Empty;
 
     public string? Description { get; set; }
+    public string? DescriptionEn { get; set; }
 
     [Range(0, double.MaxValue, ErrorMessage = "Height must be non-negative")]
     public decimal? DimensionsHeight { get; set; }
@@ -57,7 +68,9 @@ public class CreateProductRequest
     public string DimensionUnit { get; set; } = "cm";
 
     public string? Detail { get; set; }
+    public string? DetailEn { get; set; }
     public string? DeliveryInfo { get; set; }
+    public string? DeliveryInfoEn { get; set; }
 
     [Range(0, double.MaxValue, ErrorMessage = "Weight must be non-negative")]
     public decimal? Weight { get; set; }
@@ -73,10 +86,11 @@ public class CreateProductRequest
 
     public bool IsFeatured { get; set; } = false;
     public bool IsActive { get; set; } = true;
+    public int? AssemblyId { get; set; }
 
     public List<int> CategoryIds { get; set; } = new();
     public List<int> MaterialIds { get; set; } = new();
-    
+
     // Image URLs (có thể từ upload trước đó)
     public List<string> ImageUrls { get; set; } = new();
 }
@@ -87,11 +101,15 @@ public class CreateProductWithImagesRequest
     [MaxLength(255, ErrorMessage = "Name cannot exceed 255 characters")]
     public string Name { get; set; } = string.Empty;
 
+    [MaxLength(255, ErrorMessage = "Name (EN) cannot exceed 255 characters")]
+    public string? NameEn { get; set; }
+
     [Required(ErrorMessage = "Slug is required")]
     [MaxLength(255, ErrorMessage = "Slug cannot exceed 255 characters")]
     public string Slug { get; set; } = string.Empty;
 
     public string? Description { get; set; }
+    public string? DescriptionEn { get; set; }
 
     [Range(0, double.MaxValue, ErrorMessage = "Height must be non-negative")]
     public decimal? DimensionsHeight { get; set; }
@@ -106,7 +124,9 @@ public class CreateProductWithImagesRequest
     public string DimensionUnit { get; set; } = "cm";
 
     public string? Detail { get; set; }
+    public string? DetailEn { get; set; }
     public string? DeliveryInfo { get; set; }
+    public string? DeliveryInfoEn { get; set; }
 
     [Range(0, double.MaxValue, ErrorMessage = "Weight must be non-negative")]
     public decimal? Weight { get; set; }
@@ -122,6 +142,7 @@ public class CreateProductWithImagesRequest
 
     public bool IsFeatured { get; set; } = false;
     public bool IsActive { get; set; } = true;
+    public int? AssemblyId { get; set; }
 
     public List<int> CategoryIds { get; set; } = new();
     public List<int> MaterialIds { get; set; } = new();
@@ -133,11 +154,15 @@ public class UpdateProductRequest
     [MaxLength(255, ErrorMessage = "Name cannot exceed 255 characters")]
     public string Name { get; set; } = string.Empty;
 
+    [MaxLength(255, ErrorMessage = "Name (EN) cannot exceed 255 characters")]
+    public string? NameEn { get; set; }
+
     [Required(ErrorMessage = "Slug is required")]
     [MaxLength(255, ErrorMessage = "Slug cannot exceed 255 characters")]
     public string Slug { get; set; } = string.Empty;
 
     public string? Description { get; set; }
+    public string? DescriptionEn { get; set; }
 
     [Range(0, double.MaxValue, ErrorMessage = "Height must be non-negative")]
     public decimal? DimensionsHeight { get; set; }
@@ -152,7 +177,9 @@ public class UpdateProductRequest
     public string DimensionUnit { get; set; } = "cm";
 
     public string? Detail { get; set; }
+    public string? DetailEn { get; set; }
     public string? DeliveryInfo { get; set; }
+    public string? DeliveryInfoEn { get; set; }
 
     [Range(0, double.MaxValue, ErrorMessage = "Weight must be non-negative")]
     public decimal? Weight { get; set; }
@@ -168,6 +195,7 @@ public class UpdateProductRequest
 
     public bool IsFeatured { get; set; }
     public bool IsActive { get; set; }
+    public int? AssemblyId { get; set; }
 
     public List<int> CategoryIds { get; set; } = new();
     public List<int> MaterialIds { get; set; } = new();
@@ -181,6 +209,7 @@ public class ProductFilterParams
     public int? MaterialId { get; set; }
     public bool? IsFeatured { get; set; }
     public bool? IsActive { get; set; }
+    public int? AssemblyId { get; set; }
     public string? SortBy { get; set; } = "CreatedAt"; // Name, CreatedAt
     public string? SortOrder { get; set; } = "desc"; // asc, desc
 }

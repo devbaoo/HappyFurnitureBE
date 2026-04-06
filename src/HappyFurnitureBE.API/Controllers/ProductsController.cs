@@ -1,3 +1,4 @@
+using HappyFurnitureBE.Application.DTOs.Assembly;
 using HappyFurnitureBE.Application.DTOs.Category;
 using HappyFurnitureBE.Application.DTOs.Common;
 using HappyFurnitureBE.Application.DTOs.Material;
@@ -17,6 +18,7 @@ public class ProductsController : ControllerBase
     private readonly IProductRepository _productRepository;
     private readonly ICategoryRepository _categoryRepository;
     private readonly IMaterialRepository _materialRepository;
+    private readonly IAssemblyRepository _assemblyRepository;
     private readonly ICloudinaryService _cloudinaryService;
     private readonly ILogger<ProductsController> _logger;
 
@@ -24,12 +26,14 @@ public class ProductsController : ControllerBase
         IProductRepository productRepository,
         ICategoryRepository categoryRepository,
         IMaterialRepository materialRepository,
+        IAssemblyRepository assemblyRepository,
         ICloudinaryService cloudinaryService,
         ILogger<ProductsController> logger)
     {
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
         _materialRepository = materialRepository;
+        _assemblyRepository = assemblyRepository;
         _cloudinaryService = cloudinaryService;
         _logger = logger;
     }
@@ -77,6 +81,11 @@ public class ProductsController : ControllerBase
             if (filter.IsActive.HasValue)
             {
                 filteredProducts = filteredProducts.Where(p => p.IsActive == filter.IsActive);
+            }
+
+            if (filter.AssemblyId.HasValue)
+            {
+                filteredProducts = filteredProducts.Where(p => p.AssemblyId == filter.AssemblyId);
             }
 
             // Apply sorting
@@ -203,23 +212,36 @@ public class ProductsController : ControllerBase
                 }
             }
 
+            // Validate assembly exists
+            if (request.AssemblyId.HasValue)
+            {
+                var assembly = await _assemblyRepository.GetByIdAsync(request.AssemblyId.Value);
+                if (assembly == null)
+                    return BadRequest(new { message = $"Assembly with ID {request.AssemblyId} not found" });
+            }
+
             var product = new Product
             {
                 Name = request.Name,
+                NameEn = request.NameEn,
                 Slug = request.Slug,
                 Description = request.Description,
+                DescriptionEn = request.DescriptionEn,
                 DimensionsHeight = request.DimensionsHeight,
                 DimensionsWidth = request.DimensionsWidth,
                 DimensionsDepth = request.DimensionsDepth,
                 DimensionUnit = request.DimensionUnit,
                 Detail = request.Detail,
+                DetailEn = request.DetailEn,
                 DeliveryInfo = request.DeliveryInfo,
+                DeliveryInfoEn = request.DeliveryInfoEn,
                 Weight = request.Weight,
                 DeliveryHeight = request.DeliveryHeight,
                 DeliveryWidth = request.DeliveryWidth,
                 DeliveryDepth = request.DeliveryDepth,
                 IsFeatured = request.IsFeatured,
-                IsActive = request.IsActive
+                IsActive = request.IsActive,
+                AssemblyId = request.AssemblyId
             };
 
             var createdProduct = await _productRepository.AddAsync(product);
@@ -317,22 +339,35 @@ public class ProductsController : ControllerBase
                 }
             }
 
+            // Validate assembly exists
+            if (request.AssemblyId.HasValue)
+            {
+                var assembly = await _assemblyRepository.GetByIdAsync(request.AssemblyId.Value);
+                if (assembly == null)
+                    return BadRequest(new { message = $"Assembly with ID {request.AssemblyId} not found" });
+            }
+
             // Update product properties
             product.Name = request.Name;
+            product.NameEn = request.NameEn;
             product.Slug = request.Slug;
             product.Description = request.Description;
+            product.DescriptionEn = request.DescriptionEn;
             product.DimensionsHeight = request.DimensionsHeight;
             product.DimensionsWidth = request.DimensionsWidth;
             product.DimensionsDepth = request.DimensionsDepth;
             product.DimensionUnit = request.DimensionUnit;
             product.Detail = request.Detail;
+            product.DetailEn = request.DetailEn;
             product.DeliveryInfo = request.DeliveryInfo;
+            product.DeliveryInfoEn = request.DeliveryInfoEn;
             product.Weight = request.Weight;
             product.DeliveryHeight = request.DeliveryHeight;
             product.DeliveryWidth = request.DeliveryWidth;
             product.DeliveryDepth = request.DeliveryDepth;
             product.IsFeatured = request.IsFeatured;
             product.IsActive = request.IsActive;
+            product.AssemblyId = request.AssemblyId;
 
             await _productRepository.UpdateAsync(product);
 
@@ -410,20 +445,25 @@ public class ProductsController : ControllerBase
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<ActionResult<ProductDto>> CreateProductWithImages(
         [FromForm] string name,
-        [FromForm] string slug,
-        [FromForm] string? description,
-        [FromForm] decimal? dimensionsHeight,
-        [FromForm] decimal? dimensionsWidth,
-        [FromForm] decimal? dimensionsDepth,
+        [FromForm] string? nameEn = null,
+        [FromForm] string slug = "",
+        [FromForm] string? description = null,
+        [FromForm] string? descriptionEn = null,
+        [FromForm] decimal? dimensionsHeight = null,
+        [FromForm] decimal? dimensionsWidth = null,
+        [FromForm] decimal? dimensionsDepth = null,
         [FromForm] string dimensionUnit = "cm",
         [FromForm] string? detail = null,
+        [FromForm] string? detailEn = null,
         [FromForm] string? deliveryInfo = null,
+        [FromForm] string? deliveryInfoEn = null,
         [FromForm] decimal? weight = null,
         [FromForm] decimal? deliveryHeight = null,
         [FromForm] decimal? deliveryWidth = null,
         [FromForm] decimal? deliveryDepth = null,
         [FromForm] bool isFeatured = false,
         [FromForm] bool isActive = true,
+        [FromForm] int? assemblyId = null,
         [FromForm] string? categoryIds = null,
         [FromForm] List<IFormFile>? images = null)
     {
@@ -483,20 +523,25 @@ public class ProductsController : ControllerBase
             var product = new Product
             {
                 Name = name,
+                NameEn = nameEn,
                 Slug = slug,
                 Description = description,
+                DescriptionEn = descriptionEn,
                 DimensionsHeight = dimensionsHeight,
                 DimensionsWidth = dimensionsWidth,
                 DimensionsDepth = dimensionsDepth,
                 DimensionUnit = dimensionUnit,
                 Detail = detail,
+                DetailEn = detailEn,
                 DeliveryInfo = deliveryInfo,
+                DeliveryInfoEn = deliveryInfoEn,
                 Weight = weight,
                 DeliveryHeight = deliveryHeight,
                 DeliveryWidth = deliveryWidth,
                 DeliveryDepth = deliveryDepth,
                 IsFeatured = isFeatured,
                 IsActive = isActive,
+                AssemblyId = assemblyId,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -549,20 +594,35 @@ public class ProductsController : ControllerBase
         {
             Id = product.Id,
             Name = product.Name,
+            NameEn = product.NameEn,
             Slug = product.Slug,
             Description = product.Description,
+            DescriptionEn = product.DescriptionEn,
             DimensionsHeight = product.DimensionsHeight,
             DimensionsWidth = product.DimensionsWidth,
             DimensionsDepth = product.DimensionsDepth,
             DimensionUnit = product.DimensionUnit,
             Detail = product.Detail,
+            DetailEn = product.DetailEn,
             DeliveryInfo = product.DeliveryInfo,
+            DeliveryInfoEn = product.DeliveryInfoEn,
             Weight = product.Weight,
             DeliveryHeight = product.DeliveryHeight,
             DeliveryWidth = product.DeliveryWidth,
             DeliveryDepth = product.DeliveryDepth,
             IsFeatured = product.IsFeatured,
             IsActive = product.IsActive,
+            AssemblyId = product.AssemblyId,
+            Assembly = product.Assembly == null ? null : new AssemblyDto
+            {
+                Id = product.Assembly.Id,
+                Name = product.Assembly.Name,
+                Code = product.Assembly.Code,
+                Description = product.Assembly.Description,
+                IsActive = product.Assembly.IsActive,
+                CreatedAt = product.Assembly.CreatedAt,
+                UpdatedAt = product.Assembly.UpdatedAt
+            },
             CreatedAt = product.CreatedAt,
             UpdatedAt = product.UpdatedAt,
             Categories = product.ProductCategories?
@@ -571,6 +631,9 @@ public class ProductsController : ControllerBase
             {
                 Id = pc.Category.Id,
                 Name = pc.Category.Name,
+                NameEn = pc.Category.NameEn,
+                Description = pc.Category.Description,
+                DescriptionEn = pc.Category.DescriptionEn,
                 ImageUrl = pc.Category.ImageUrl,
                 ParentId = pc.Category.ParentId,
                 IsActive = pc.Category.IsActive,

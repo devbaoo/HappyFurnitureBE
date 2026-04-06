@@ -16,6 +16,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<ProductCategory> ProductCategories { get; set; }
     public DbSet<Material> Materials { get; set; }
     public DbSet<ProductMaterial> ProductMaterials { get; set; }
+    public DbSet<Assembly> Assemblies { get; set; }
     public DbSet<ProductVariant> ProductVariants { get; set; }
     public DbSet<ProductImage> ProductImages { get; set; }
     public DbSet<Contact> Contacts { get; set; }
@@ -41,12 +42,23 @@ public class ApplicationDbContext : DbContext
                   .OnDelete(DeleteBehavior.Restrict);
         });
 
+        // Configure Assembly entity
+        modelBuilder.Entity<Assembly>(entity =>
+        {
+            entity.Property(e => e.Name).IsRequired();
+        });
+
         // Configure Product entity
         modelBuilder.Entity<Product>(entity =>
         {
             entity.HasIndex(e => e.Slug).IsUnique();
             entity.Property(e => e.Name).IsRequired();
             entity.Property(e => e.Slug).IsRequired();
+
+            entity.HasOne(p => p.Assembly)
+                  .WithMany(a => a.Products)
+                  .HasForeignKey(p => p.AssemblyId)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
 
         // Configure ProductCategory many-to-many relationship

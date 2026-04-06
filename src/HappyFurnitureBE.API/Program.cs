@@ -32,6 +32,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
+builder.Services.AddScoped<IAssemblyRepository, AssemblyRepository>();
 builder.Services.AddScoped<IContactRepository, ContactRepository>();
 
 // Register services

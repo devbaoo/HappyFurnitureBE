@@ -20,6 +20,7 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
                 .ThenInclude(pm => pm.Material)
             .Include(p => p.ProductVariants)
             .Include(p => p.ProductImages)
+            .Include(p => p.Assembly)
             .FirstOrDefaultAsync(p => p.Slug == slug);
     }
 
@@ -33,6 +34,7 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
                 .ThenInclude(pm => pm.Material)
             .Include(p => p.ProductVariants)
             .Include(p => p.ProductImages)
+            .Include(p => p.Assembly)
             .ToListAsync();
     }
 
@@ -46,6 +48,7 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
                 .ThenInclude(pm => pm.Material)
             .Include(p => p.ProductVariants)
             .Include(p => p.ProductImages)
+            .Include(p => p.Assembly)
             .ToListAsync();
     }
 
@@ -59,6 +62,7 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
                 .ThenInclude(pm => pm.Material)
             .Include(p => p.ProductVariants)
             .Include(p => p.ProductImages)
+            .Include(p => p.Assembly)
             .ToListAsync();
     }
 
@@ -71,6 +75,7 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
                 .ThenInclude(pm => pm.Material)
             .Include(p => p.ProductVariants)
             .Include(p => p.ProductImages)
+            .Include(p => p.Assembly)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
