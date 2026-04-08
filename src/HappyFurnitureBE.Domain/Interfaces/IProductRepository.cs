@@ -13,12 +13,24 @@ public interface IProductRepository : IRepository<Product>
     
     // Product Images
     Task<ProductImage?> GetProductImageByIdAsync(int id);
+    Task<IEnumerable<ProductImage>> GetProductImagesAsync(int productId);
     Task<ProductImage> AddProductImageAsync(ProductImage productImage);
     Task UpdateProductImageAsync(ProductImage productImage);
     Task DeleteProductImageAsync(int id);
-    Task UnsetPrimaryImagesAsync(int productId);
+    Task DeleteProductImagesAsync(int productId);
+    Task UnsetPrimaryProductImagesAsync(int productId);
     Task SetPrimaryImageAsync(int imageId);
     
+    // Product Variant Images
+    Task<ProductVariantImage?> GetProductVariantImageByIdAsync(int id);
+    Task<IEnumerable<ProductVariantImage>> GetVariantImagesAsync(int variantId);
+    Task<ProductVariantImage> AddProductVariantImageAsync(ProductVariantImage image);
+    Task UpdateProductVariantImageAsync(ProductVariantImage image);
+    Task DeleteProductVariantImageAsync(int id);
+    Task DeleteProductVariantImagesAsync(int variantId);
+    Task UnsetPrimaryVariantImagesAsync(int variantId);
+    Task SetPrimaryVariantImageAsync(int imageId);
+
     // Product Variants
     Task<ProductVariant?> GetProductVariantByIdAsync(int id);
     Task<ProductVariant> AddProductVariantAsync(ProductVariant productVariant);
@@ -33,4 +45,4 @@ public interface IProductRepository : IRepository<Product>
     // Product Materials
     Task<ProductMaterial> AddProductMaterialAsync(ProductMaterial productMaterial);
     Task DeleteProductMaterialsAsync(int productId);
-}
+}

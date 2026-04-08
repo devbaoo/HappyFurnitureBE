@@ -20,4 +20,5 @@ public class ProductVariant : BaseEntity
 
     // Navigation properties
     public Product Product { get; set; } = null!;
+    public ICollection<ProductVariantImage> ProductVariantImages { get; set; } = new List<ProductVariantImage>();
 }

@@ -26,6 +26,10 @@ public class ProductVariantsController : ControllerBase
         _logger = logger;
     }
 
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Product Variant CRUD
+    // ═══════════════════════════════════════════════════════════════════════════
+
     [HttpGet("product/{productId}")]
     public async Task<ActionResult<PagedResult<ProductVariantDto>>> GetProductVariants(
         int productId,
@@ -246,6 +250,200 @@ public class ProductVariantsController : ControllerBase
         }
     }
 
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Product Variant Images CRUD
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    /// <summary>Lấy bộ ảnh của một biến thể</summary>
+    [HttpGet("{variantId}/images")]
+    public async Task<ActionResult<IEnumerable<ProductVariantImageDto>>> GetVariantImages(int variantId)
+    {
+        try
+        {
+            var variant = await _productRepository.GetProductVariantByIdAsync(variantId);
+            if (variant == null)
+                return NotFound(new { message = "Product variant not found" });
+
+            var images = await _productRepository.GetVariantImagesAsync(variantId);
+            return Ok(images.Select(MapToVariantImageDto));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching variant images for variant {VariantId}", variantId);
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
+
+    /// <summary>Thêm ảnh cho biến thể (JSON)</summary>
+    [HttpPost("{variantId}/images")]
+    [Authorize(Roles = "admin")]
+    public async Task<ActionResult<ProductVariantImageDto>> CreateVariantImage(
+        int variantId, [FromBody] CreateProductVariantImageRequest request)
+    {
+        try
+        {
+            var variant = await _productRepository.GetProductVariantByIdAsync(variantId);
+            if (variant == null)
+                return BadRequest(new { message = "Product variant not found" });
+
+            // Override variantId from route
+            if (request.IsPrimary)
+            {
+                await _productRepository.UnsetPrimaryVariantImagesAsync(variantId);
+            }
+
+            var image = new ProductVariantImage
+            {
+                VariantId = variantId,
+                ImageUrl = request.ImageUrl,
+                AltText = request.AltText,
+                IsPrimary = request.IsPrimary,
+                SortOrder = request.SortOrder
+            };
+
+            var created = await _productRepository.AddProductVariantImageAsync(image);
+            return CreatedAtAction(nameof(GetVariantImages), new { variantId }, MapToVariantImageDto(created));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating variant image for variant {VariantId}", variantId);
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
+
+    /// <summary>Thêm ảnh cho biến thể bằng file upload</summary>
+    [HttpPost("{variantId}/images/with-image")]
+    [Authorize(Roles = "admin")]
+    [ApiExplorerSettings(IgnoreApi = true)]
+    public async Task<ActionResult<ProductVariantImageDto>> CreateVariantImageWithUpload(
+        int variantId,
+        [FromForm] IFormFile image,
+        [FromForm] bool isPrimary = false,
+        [FromForm] int sortOrder = 1,
+        [FromForm] string? altText = null)
+    {
+        try
+        {
+            var variant = await _productRepository.GetProductVariantByIdAsync(variantId);
+            if (variant == null)
+                return BadRequest(new { message = "Product variant not found" });
+
+            if (image == null || image.Length == 0)
+                return BadRequest(new { message = "Image file is required" });
+
+            string imageUrl;
+            try
+            {
+                imageUrl = await _cloudinaryService.UploadImageAsync(image, "product-variant-images");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error uploading variant image to Cloudinary");
+                return BadRequest(new { message = "Error uploading image: " + ex.Message });
+            }
+
+            if (isPrimary)
+            {
+                await _productRepository.UnsetPrimaryVariantImagesAsync(variantId);
+            }
+
+            var variantImage = new ProductVariantImage
+            {
+                VariantId = variantId,
+                ImageUrl = imageUrl,
+                AltText = altText,
+                IsPrimary = isPrimary,
+                SortOrder = sortOrder
+            };
+
+            var created = await _productRepository.AddProductVariantImageAsync(variantImage);
+            return CreatedAtAction(nameof(GetVariantImages), new { variantId }, MapToVariantImageDto(created));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating variant image with upload for variant {VariantId}", variantId);
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
+
+    /// <summary>Cập nhật ảnh biến thể</summary>
+    [HttpPut("images/{imageId}")]
+    [Authorize(Roles = "admin")]
+    public async Task<ActionResult<ProductVariantImageDto>> UpdateVariantImage(
+        int imageId, [FromBody] UpdateProductVariantImageRequest request)
+    {
+        try
+        {
+            var image = await _productRepository.GetProductVariantImageByIdAsync(imageId);
+            if (image == null)
+                return NotFound(new { message = "Variant image not found" });
+
+            if (request.IsPrimary && !image.IsPrimary)
+            {
+                await _productRepository.UnsetPrimaryVariantImagesAsync(image.VariantId);
+            }
+
+            image.ImageUrl = request.ImageUrl;
+            image.AltText = request.AltText;
+            image.IsPrimary = request.IsPrimary;
+            image.SortOrder = request.SortOrder;
+
+            await _productRepository.UpdateProductVariantImageAsync(image);
+            return Ok(MapToVariantImageDto(image));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating variant image {ImageId}", imageId);
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
+
+    /// <summary>Xóa ảnh biến thể</summary>
+    [HttpDelete("images/{imageId}")]
+    [Authorize(Roles = "admin")]
+    public async Task<ActionResult> DeleteVariantImage(int imageId)
+    {
+        try
+        {
+            var image = await _productRepository.GetProductVariantImageByIdAsync(imageId);
+            if (image == null)
+                return NotFound(new { message = "Variant image not found" });
+
+            await _productRepository.DeleteProductVariantImageAsync(imageId);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting variant image {ImageId}", imageId);
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
+
+    /// <summary>Đặt ảnh chính cho biến thể</summary>
+    [HttpPost("images/{imageId}/set-primary")]
+    [Authorize(Roles = "admin")]
+    public async Task<ActionResult> SetPrimaryVariantImage(int imageId)
+    {
+        try
+        {
+            var image = await _productRepository.GetProductVariantImageByIdAsync(imageId);
+            if (image == null)
+                return NotFound(new { message = "Variant image not found" });
+
+            await _productRepository.SetPrimaryVariantImageAsync(imageId);
+            return Ok(new { message = "Primary variant image set successfully" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error setting primary variant image {ImageId}", imageId);
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Mapping helpers
+    // ═══════════════════════════════════════════════════════════════════════════
+
     private static ProductVariantDto MapToProductVariantDto(ProductVariant productVariant)
     {
         return new ProductVariantDto
@@ -257,7 +455,24 @@ public class ProductVariantsController : ControllerBase
             ImageUrl = productVariant.ImageUrl,
             IsActive = productVariant.IsActive,
             CreatedAt = productVariant.CreatedAt,
-            UpdatedAt = productVariant.UpdatedAt
+            UpdatedAt = productVariant.UpdatedAt,
+            Images = productVariant.ProductVariantImages?.Select(MapToVariantImageDto).ToList()
+                ?? new List<ProductVariantImageDto>()
+        };
+    }
+
+    private static ProductVariantImageDto MapToVariantImageDto(ProductVariantImage image)
+    {
+        return new ProductVariantImageDto
+        {
+            Id = image.Id,
+            VariantId = image.VariantId,
+            ImageUrl = image.ImageUrl,
+            AltText = image.AltText,
+            IsPrimary = image.IsPrimary,
+            SortOrder = image.SortOrder,
+            CreatedAt = image.CreatedAt,
+            UpdatedAt = image.UpdatedAt
         };
     }
 }

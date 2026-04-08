@@ -1,4 +1,3 @@
-using HappyFurnitureBE.Application.DTOs.Common;
 using HappyFurnitureBE.Application.DTOs.Product;
 using HappyFurnitureBE.Application.Interfaces;
 using HappyFurnitureBE.Domain.Entities;
@@ -26,43 +25,22 @@ public class ProductImagesController : ControllerBase
         _logger = logger;
     }
 
+    /// <summary>Lấy ảnh của product</summary>
     [HttpGet("product/{productId}")]
-    public async Task<ActionResult<PagedResult<ProductImageDto>>> GetProductImages(
-        int productId,
-        [FromQuery] PaginationParams pagination)
+    public async Task<ActionResult<IEnumerable<ProductImageDto>>> GetProductImages(int productId)
     {
         try
         {
             var product = await _productRepository.GetByIdAsync(productId);
             if (product == null)
-            {
                 return NotFound(new { message = "Product not found" });
-            }
 
-            var productWithImages = await _productRepository.GetProductWithDetailsAsync(productId);
-            var images = productWithImages?.ProductImages ?? new List<ProductImage>();
-
-            var totalCount = images.Count;
-            var pagedImages = images
-                .OrderBy(pi => pi.SortOrder)
-                .Skip((pagination.PageNumber - 1) * pagination.PageSize)
-                .Take(pagination.PageSize)
-                .Select(MapToProductImageDto)
-                .ToList();
-
-            var result = new PagedResult<ProductImageDto>
-            {
-                Items = pagedImages,
-                TotalCount = totalCount,
-                PageNumber = pagination.PageNumber,
-                PageSize = pagination.PageSize
-            };
-
-            return Ok(result);
+            var images = await _productRepository.GetProductImagesAsync(productId);
+            return Ok(images.Select(MapToProductImageDto));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while fetching product images for product {ProductId}", productId);
+            _logger.LogError(ex, "Error fetching product images for product {ProductId}", productId);
             return StatusCode(500, new { message = "Internal server error" });
         }
     }
@@ -99,10 +77,9 @@ public class ProductImagesController : ControllerBase
                 return BadRequest(new { message = "Product not found" });
             }
 
-            // If this is set as primary, unset other primary images
             if (request.IsPrimary)
             {
-                await _productRepository.UnsetPrimaryImagesAsync(request.ProductId);
+                await _productRepository.UnsetPrimaryProductImagesAsync(request.ProductId);
             }
 
             var productImage = new ProductImage
@@ -116,7 +93,7 @@ public class ProductImagesController : ControllerBase
 
             var createdImage = await _productRepository.AddProductImageAsync(productImage);
             var imageDto = MapToProductImageDto(createdImage);
-            
+
             return CreatedAtAction(nameof(GetProductImage), new { id = createdImage.Id }, imageDto);
         }
         catch (Exception ex)
@@ -165,7 +142,7 @@ public class ProductImagesController : ControllerBase
 
             if (isPrimary)
             {
-                await _productRepository.UnsetPrimaryImagesAsync(productId);
+                await _productRepository.UnsetPrimaryProductImagesAsync(productId);
             }
 
             var productImage = new ProductImage
@@ -199,10 +176,9 @@ public class ProductImagesController : ControllerBase
                 return NotFound(new { message = "Product image not found" });
             }
 
-            // If this is set as primary, unset other primary images for the same product
             if (request.IsPrimary && !productImage.IsPrimary)
             {
-                await _productRepository.UnsetPrimaryImagesAsync(productImage.ProductId);
+                await _productRepository.UnsetPrimaryProductImagesAsync(productImage.ProductId);
             }
 
             productImage.ImageUrl = request.ImageUrl;

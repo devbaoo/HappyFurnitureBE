@@ -19,6 +19,7 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
             .Include(p => p.ProductMaterials)
                 .ThenInclude(pm => pm.Material)
             .Include(p => p.ProductVariants)
+                .ThenInclude(pv => pv.ProductVariantImages)
             .Include(p => p.ProductImages)
             .Include(p => p.Assembly)
             .FirstOrDefaultAsync(p => p.Slug == slug);
@@ -33,6 +34,7 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
             .Include(p => p.ProductMaterials)
                 .ThenInclude(pm => pm.Material)
             .Include(p => p.ProductVariants)
+                .ThenInclude(pv => pv.ProductVariantImages)
             .Include(p => p.ProductImages)
             .Include(p => p.Assembly)
             .ToListAsync();
@@ -47,6 +49,7 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
             .Include(p => p.ProductMaterials)
                 .ThenInclude(pm => pm.Material)
             .Include(p => p.ProductVariants)
+                .ThenInclude(pv => pv.ProductVariantImages)
             .Include(p => p.ProductImages)
             .Include(p => p.Assembly)
             .ToListAsync();
@@ -61,6 +64,7 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
             .Include(p => p.ProductMaterials)
                 .ThenInclude(pm => pm.Material)
             .Include(p => p.ProductVariants)
+                .ThenInclude(pv => pv.ProductVariantImages)
             .Include(p => p.ProductImages)
             .Include(p => p.Assembly)
             .ToListAsync();
@@ -74,6 +78,7 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
             .Include(p => p.ProductMaterials)
                 .ThenInclude(pm => pm.Material)
             .Include(p => p.ProductVariants)
+                .ThenInclude(pv => pv.ProductVariantImages)
             .Include(p => p.ProductImages)
             .Include(p => p.Assembly)
             .FirstOrDefaultAsync(p => p.Id == id);
@@ -84,7 +89,8 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
         return await _dbSet.AnyAsync(p => p.Slug == slug);
     }
 
-    // Product Images
+    // ─── Product Images ──────────────────────────────────────────────────────────
+
     public async Task<ProductImage?> GetProductImageByIdAsync(int id)
     {
         return await _context.ProductImages.FirstOrDefaultAsync(pi => pi.Id == id);
@@ -103,9 +109,19 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<IEnumerable<ProductImage>> GetProductImagesAsync(int productId)
+    {
+        return await _context.ProductImages
+            .Where(pi => pi.ProductId == productId)
+            .AsNoTracking()
+            .OrderBy(pi => pi.SortOrder)
+            .ToListAsync();
+    }
+
     public async Task DeleteProductImageAsync(int id)
     {
-        var productImage = await GetProductImageByIdAsync(id);
+        var productImage = await _context.ProductImages
+            .FirstOrDefaultAsync(pi => pi.Id == id);
         if (productImage != null)
         {
             _context.ProductImages.Remove(productImage);
@@ -113,16 +129,25 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
         }
     }
 
-    public async Task UnsetPrimaryImagesAsync(int productId)
+    public async Task DeleteProductImagesAsync(int productId)
+    {
+        var images = await _context.ProductImages
+            .Where(pi => pi.ProductId == productId)
+            .ToListAsync();
+        if (images.Any())
+        {
+            _context.ProductImages.RemoveRange(images);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task UnsetPrimaryProductImagesAsync(int productId)
     {
         var primaryImages = await _context.ProductImages
             .Where(pi => pi.ProductId == productId && pi.IsPrimary)
             .ToListAsync();
-
         foreach (var image in primaryImages)
-        {
             image.IsPrimary = false;
-        }
 
         await _context.SaveChangesAsync();
     }
@@ -132,13 +157,87 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
         var image = await GetProductImageByIdAsync(imageId);
         if (image != null)
         {
-            await UnsetPrimaryImagesAsync(image.ProductId);
+            await UnsetPrimaryProductImagesAsync(image.ProductId);
             image.IsPrimary = true;
             await _context.SaveChangesAsync();
         }
     }
 
-    // Product Variants
+    // ─── Product Variant Images ──────────────────────────────────────────────────
+
+    public async Task<ProductVariantImage?> GetProductVariantImageByIdAsync(int id)
+    {
+        return await _context.ProductVariantImages.FirstOrDefaultAsync(pvi => pvi.Id == id);
+    }
+
+    public async Task<IEnumerable<ProductVariantImage>> GetVariantImagesAsync(int variantId)
+    {
+        return await _context.ProductVariantImages
+            .Where(pvi => pvi.VariantId == variantId)
+            .AsNoTracking()
+            .OrderBy(pvi => pvi.SortOrder)
+            .ToListAsync();
+    }
+
+    public async Task<ProductVariantImage> AddProductVariantImageAsync(ProductVariantImage image)
+    {
+        _context.ProductVariantImages.Add(image);
+        await _context.SaveChangesAsync();
+        return image;
+    }
+
+    public async Task UpdateProductVariantImageAsync(ProductVariantImage image)
+    {
+        _context.ProductVariantImages.Update(image);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteProductVariantImageAsync(int id)
+    {
+        var image = await _context.ProductVariantImages.FirstOrDefaultAsync(pvi => pvi.Id == id);
+        if (image != null)
+        {
+            _context.ProductVariantImages.Remove(image);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task DeleteProductVariantImagesAsync(int variantId)
+    {
+        var images = await _context.ProductVariantImages
+            .Where(pvi => pvi.VariantId == variantId)
+            .ToListAsync();
+        if (images.Any())
+        {
+            _context.ProductVariantImages.RemoveRange(images);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task UnsetPrimaryVariantImagesAsync(int variantId)
+    {
+        var primaryImages = await _context.ProductVariantImages
+            .Where(pvi => pvi.VariantId == variantId && pvi.IsPrimary)
+            .ToListAsync();
+        foreach (var image in primaryImages)
+            image.IsPrimary = false;
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task SetPrimaryVariantImageAsync(int imageId)
+    {
+        var image = await GetProductVariantImageByIdAsync(imageId);
+        if (image != null)
+        {
+            await UnsetPrimaryVariantImagesAsync(image.VariantId);
+            image.IsPrimary = true;
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    // ─── Product Variants ────────────────────────────────────────────────────────
+
     public async Task<ProductVariant?> GetProductVariantByIdAsync(int id)
     {
         return await _context.ProductVariants.FirstOrDefaultAsync(pv => pv.Id == id);
@@ -174,7 +273,8 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
             .ToListAsync();
     }
 
-    // Product Categories
+    // ─── Product Categories ──────────────────────────────────────────────────────
+
     public async Task<ProductCategory> AddProductCategoryAsync(ProductCategory productCategory)
     {
         _context.ProductCategories.Add(productCategory);
@@ -191,7 +291,8 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
         await _context.SaveChangesAsync();
     }
 
-    // Product Materials
+    // ─── Product Materials ───────────────────────────────────────────────────────
+
     public async Task<ProductMaterial> AddProductMaterialAsync(ProductMaterial productMaterial)
     {
         _context.ProductMaterials.Add(productMaterial);

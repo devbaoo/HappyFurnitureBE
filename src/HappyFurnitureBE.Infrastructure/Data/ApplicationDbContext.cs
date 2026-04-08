@@ -19,6 +19,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Assembly> Assemblies { get; set; }
     public DbSet<ProductVariant> ProductVariants { get; set; }
     public DbSet<ProductImage> ProductImages { get; set; }
+    public DbSet<ProductVariantImage> ProductVariantImages { get; set; }
     public DbSet<Contact> Contacts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -114,6 +115,15 @@ public class ApplicationDbContext : DbContext
             entity.HasOne(pi => pi.Product)
                   .WithMany(p => p.ProductImages)
                   .HasForeignKey(pi => pi.ProductId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure ProductVariantImage entity
+        modelBuilder.Entity<ProductVariantImage>(entity =>
+        {
+            entity.HasOne(pvi => pvi.Variant)
+                  .WithMany(v => v.ProductVariantImages)
+                  .HasForeignKey(pvi => pvi.VariantId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
