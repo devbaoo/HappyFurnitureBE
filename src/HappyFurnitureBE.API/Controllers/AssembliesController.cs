@@ -33,7 +33,8 @@ public class AssembliesController : ControllerBase
             if (!string.IsNullOrEmpty(filter.Name))
             {
                 filtered = filtered.Where(a =>
-                    a.Name.Contains(filter.Name, StringComparison.OrdinalIgnoreCase));
+                    a.NameVi.Contains(filter.Name, StringComparison.OrdinalIgnoreCase) ||
+                    a.NameEn.Contains(filter.Name, StringComparison.OrdinalIgnoreCase));
             }
 
             if (filter.IsActive.HasValue)
@@ -105,9 +106,11 @@ public class AssembliesController : ControllerBase
         {
             var assembly = new Assembly
             {
-                Name = request.Name,
+                NameVi = request.NameVi,
+                NameEn = request.NameEn,
                 Code = request.Code,
-                Description = request.Description,
+                DescriptionVi = request.DescriptionVi,
+                DescriptionEn = request.DescriptionEn,
                 IsActive = request.IsActive
             };
 
@@ -131,9 +134,11 @@ public class AssembliesController : ControllerBase
             if (assembly == null)
                 return NotFound(new { message = "Assembly not found" });
 
-            assembly.Name = request.Name;
+            assembly.NameVi = request.NameVi;
+            assembly.NameEn = request.NameEn;
             assembly.Code = request.Code;
-            assembly.Description = request.Description;
+            assembly.DescriptionVi = request.DescriptionVi;
+            assembly.DescriptionEn = request.DescriptionEn;
             assembly.IsActive = request.IsActive;
 
             await _assemblyRepository.UpdateAsync(assembly);
@@ -169,9 +174,11 @@ public class AssembliesController : ControllerBase
     private static AssemblyDto MapToDto(Assembly assembly) => new()
     {
         Id = assembly.Id,
-        Name = assembly.Name,
+        NameVi = assembly.NameVi,
+        NameEn = assembly.NameEn,
         Code = assembly.Code,
-        Description = assembly.Description,
+        DescriptionVi = assembly.DescriptionVi,
+        DescriptionEn = assembly.DescriptionEn,
         IsActive = assembly.IsActive,
         CreatedAt = assembly.CreatedAt,
         UpdatedAt = assembly.UpdatedAt

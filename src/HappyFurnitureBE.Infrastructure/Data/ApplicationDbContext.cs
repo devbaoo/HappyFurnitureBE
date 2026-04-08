@@ -45,7 +45,7 @@ public class ApplicationDbContext : DbContext
         // Configure Assembly entity
         modelBuilder.Entity<Assembly>(entity =>
         {
-            entity.Property(e => e.Name).IsRequired();
+            entity.Property(e => e.NameVi).IsRequired();
         });
 
         // Configure Product entity
@@ -80,7 +80,7 @@ public class ApplicationDbContext : DbContext
         // Configure Material entity
         modelBuilder.Entity<Material>(entity =>
         {
-            entity.Property(e => e.Name).IsRequired();
+            entity.Property(e => e.NameVi).IsRequired();
         });
 
         // Configure ProductMaterial many-to-many relationship

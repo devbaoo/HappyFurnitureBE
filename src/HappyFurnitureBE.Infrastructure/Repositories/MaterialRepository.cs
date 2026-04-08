@@ -15,7 +15,7 @@ public class MaterialRepository : BaseRepository<Material>, IMaterialRepository
     {
         return await _dbSet
             .Where(m => m.IsActive)
-            .OrderBy(m => m.Name)
+            .OrderBy(m => m.NameVi)
             .ToListAsync();
     }
 

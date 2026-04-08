@@ -616,9 +616,11 @@ public class ProductsController : ControllerBase
             Assembly = product.Assembly == null ? null : new AssemblyDto
             {
                 Id = product.Assembly.Id,
-                Name = product.Assembly.Name,
+                NameVi = product.Assembly.NameVi,
+                NameEn = product.Assembly.NameEn,
                 Code = product.Assembly.Code,
-                Description = product.Assembly.Description,
+                DescriptionVi = product.Assembly.DescriptionVi,
+                DescriptionEn = product.Assembly.DescriptionEn,
                 IsActive = product.Assembly.IsActive,
                 CreatedAt = product.Assembly.CreatedAt,
                 UpdatedAt = product.Assembly.UpdatedAt
@@ -645,8 +647,10 @@ public class ProductsController : ControllerBase
                 .Select(pm => new MaterialDto
             {
                 Id = pm.Material.Id,
-                Name = pm.Material.Name,
-                Description = pm.Material.Description,
+                NameVi = pm.Material.NameVi,
+                NameEn = pm.Material.NameEn,
+                DescriptionVi = pm.Material.DescriptionVi,
+                DescriptionEn = pm.Material.DescriptionEn,
                 IsActive = pm.Material.IsActive,
                 CreatedAt = pm.Material.CreatedAt,
                 UpdatedAt = pm.Material.UpdatedAt
