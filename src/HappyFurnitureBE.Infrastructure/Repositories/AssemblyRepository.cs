@@ -15,7 +15,7 @@ public class AssemblyRepository : BaseRepository<Assembly>, IAssemblyRepository
     {
         return await _dbSet
             .Where(a => a.IsActive)
-            .OrderBy(a => a.Name)
+            .OrderBy(a => a.NameVi)
             .ToListAsync();
     }
 }

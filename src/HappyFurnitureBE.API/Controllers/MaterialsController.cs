@@ -34,7 +34,8 @@ public class MaterialsController : ControllerBase
             if (!string.IsNullOrEmpty(filter.Name))
             {
                 filteredMaterials = filteredMaterials.Where(m => 
-                    m.Name.Contains(filter.Name, StringComparison.OrdinalIgnoreCase));
+                    m.NameVi.Contains(filter.Name, StringComparison.OrdinalIgnoreCase) ||
+                    m.NameEn.Contains(filter.Name, StringComparison.OrdinalIgnoreCase));
             }
             
             if (filter.IsActive.HasValue)
@@ -111,8 +112,10 @@ public class MaterialsController : ControllerBase
         {
             var material = new Material
             {
-                Name = request.Name,
-                Description = request.Description,
+                NameVi = request.NameVi,
+                NameEn = request.NameEn,
+                DescriptionVi = request.DescriptionVi,
+                DescriptionEn = request.DescriptionEn,
                 IsActive = request.IsActive
             };
 
@@ -140,8 +143,10 @@ public class MaterialsController : ControllerBase
                 return NotFound(new { message = "Material not found" });
             }
 
-            material.Name = request.Name;
-            material.Description = request.Description;
+            material.NameVi = request.NameVi;
+            material.NameEn = request.NameEn;
+            material.DescriptionVi = request.DescriptionVi;
+            material.DescriptionEn = request.DescriptionEn;
             material.IsActive = request.IsActive;
 
             await _materialRepository.UpdateAsync(material);
@@ -183,8 +188,10 @@ public class MaterialsController : ControllerBase
         return new MaterialDto
         {
             Id = material.Id,
-            Name = material.Name,
-            Description = material.Description,
+            NameVi = material.NameVi,
+            NameEn = material.NameEn,
+            DescriptionVi = material.DescriptionVi,
+            DescriptionEn = material.DescriptionEn,
             IsActive = material.IsActive,
             CreatedAt = material.CreatedAt,
             UpdatedAt = material.UpdatedAt
