@@ -13,18 +13,18 @@ public class ProductDto
     public string Slug { get; set; } = string.Empty;
     public string? Description { get; set; }
     public string? DescriptionEn { get; set; }
-    public decimal? DimensionsHeight { get; set; }
-    public decimal? DimensionsWidth { get; set; }
-    public decimal? DimensionsDepth { get; set; }
+    public string? DimensionsHeight { get; set; }
+    public string? DimensionsWidth { get; set; }
+    public string? DimensionsDepth { get; set; }
     public string DimensionUnit { get; set; } = "cm";
     public string? Detail { get; set; }
     public string? DetailEn { get; set; }
     public string? DeliveryInfo { get; set; }
     public string? DeliveryInfoEn { get; set; }
-    public decimal? Weight { get; set; }
-    public decimal? DeliveryHeight { get; set; }
-    public decimal? DeliveryWidth { get; set; }
-    public decimal? DeliveryDepth { get; set; }
+    public string? Weight { get; set; }
+    public string? DeliveryHeight { get; set; }
+    public string? DeliveryWidth { get; set; }
+    public string? DeliveryDepth { get; set; }
     public bool IsFeatured { get; set; }
     public bool IsActive { get; set; }
     public int? AssemblyId { get; set; }
@@ -55,14 +55,14 @@ public class CreateProductRequest
     public string? Description { get; set; }
     public string? DescriptionEn { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Height must be non-negative")]
-    public decimal? DimensionsHeight { get; set; }
+    [MaxLength(50, ErrorMessage = "Height cannot exceed 50 characters")]
+    public string? DimensionsHeight { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Width must be non-negative")]
-    public decimal? DimensionsWidth { get; set; }
+    [MaxLength(50, ErrorMessage = "Width cannot exceed 50 characters")]
+    public string? DimensionsWidth { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Depth must be non-negative")]
-    public decimal? DimensionsDepth { get; set; }
+    [MaxLength(50, ErrorMessage = "Depth cannot exceed 50 characters")]
+    public string? DimensionsDepth { get; set; }
 
     [MaxLength(10, ErrorMessage = "Dimension unit cannot exceed 10 characters")]
     public string DimensionUnit { get; set; } = "cm";
@@ -72,17 +72,17 @@ public class CreateProductRequest
     public string? DeliveryInfo { get; set; }
     public string? DeliveryInfoEn { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Weight must be non-negative")]
-    public decimal? Weight { get; set; }
+    [MaxLength(50, ErrorMessage = "Weight cannot exceed 50 characters")]
+    public string? Weight { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Delivery height must be non-negative")]
-    public decimal? DeliveryHeight { get; set; }
+    [MaxLength(50, ErrorMessage = "Delivery height cannot exceed 50 characters")]
+    public string? DeliveryHeight { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Delivery width must be non-negative")]
-    public decimal? DeliveryWidth { get; set; }
+    [MaxLength(50, ErrorMessage = "Delivery width cannot exceed 50 characters")]
+    public string? DeliveryWidth { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Delivery depth must be non-negative")]
-    public decimal? DeliveryDepth { get; set; }
+    [MaxLength(50, ErrorMessage = "Delivery depth cannot exceed 50 characters")]
+    public string? DeliveryDepth { get; set; }
 
     public bool IsFeatured { get; set; } = false;
     public bool IsActive { get; set; } = true;
@@ -111,14 +111,14 @@ public class CreateProductWithImagesRequest
     public string? Description { get; set; }
     public string? DescriptionEn { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Height must be non-negative")]
-    public decimal? DimensionsHeight { get; set; }
+    [MaxLength(50, ErrorMessage = "Height cannot exceed 50 characters")]
+    public string? DimensionsHeight { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Width must be non-negative")]
-    public decimal? DimensionsWidth { get; set; }
+    [MaxLength(50, ErrorMessage = "Width cannot exceed 50 characters")]
+    public string? DimensionsWidth { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Depth must be non-negative")]
-    public decimal? DimensionsDepth { get; set; }
+    [MaxLength(50, ErrorMessage = "Depth cannot exceed 50 characters")]
+    public string? DimensionsDepth { get; set; }
 
     [MaxLength(10, ErrorMessage = "Dimension unit cannot exceed 10 characters")]
     public string DimensionUnit { get; set; } = "cm";
@@ -128,17 +128,17 @@ public class CreateProductWithImagesRequest
     public string? DeliveryInfo { get; set; }
     public string? DeliveryInfoEn { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Weight must be non-negative")]
-    public decimal? Weight { get; set; }
+    [MaxLength(50, ErrorMessage = "Weight cannot exceed 50 characters")]
+    public string? Weight { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Delivery height must be non-negative")]
-    public decimal? DeliveryHeight { get; set; }
+    [MaxLength(50, ErrorMessage = "Delivery height cannot exceed 50 characters")]
+    public string? DeliveryHeight { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Delivery width must be non-negative")]
-    public decimal? DeliveryWidth { get; set; }
+    [MaxLength(50, ErrorMessage = "Delivery width cannot exceed 50 characters")]
+    public string? DeliveryWidth { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Delivery depth must be non-negative")]
-    public decimal? DeliveryDepth { get; set; }
+    [MaxLength(50, ErrorMessage = "Delivery depth cannot exceed 50 characters")]
+    public string? DeliveryDepth { get; set; }
 
     public bool IsFeatured { get; set; } = false;
     public bool IsActive { get; set; } = true;
@@ -164,14 +164,14 @@ public class UpdateProductRequest
     public string? Description { get; set; }
     public string? DescriptionEn { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Height must be non-negative")]
-    public decimal? DimensionsHeight { get; set; }
+    [MaxLength(50, ErrorMessage = "Height cannot exceed 50 characters")]
+    public string? DimensionsHeight { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Width must be non-negative")]
-    public decimal? DimensionsWidth { get; set; }
+    [MaxLength(50, ErrorMessage = "Width cannot exceed 50 characters")]
+    public string? DimensionsWidth { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Depth must be non-negative")]
-    public decimal? DimensionsDepth { get; set; }
+    [MaxLength(50, ErrorMessage = "Depth cannot exceed 50 characters")]
+    public string? DimensionsDepth { get; set; }
 
     [MaxLength(10, ErrorMessage = "Dimension unit cannot exceed 10 characters")]
     public string DimensionUnit { get; set; } = "cm";
@@ -181,17 +181,17 @@ public class UpdateProductRequest
     public string? DeliveryInfo { get; set; }
     public string? DeliveryInfoEn { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Weight must be non-negative")]
-    public decimal? Weight { get; set; }
+    [MaxLength(50, ErrorMessage = "Weight cannot exceed 50 characters")]
+    public string? Weight { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Delivery height must be non-negative")]
-    public decimal? DeliveryHeight { get; set; }
+    [MaxLength(50, ErrorMessage = "Delivery height cannot exceed 50 characters")]
+    public string? DeliveryHeight { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Delivery width must be non-negative")]
-    public decimal? DeliveryWidth { get; set; }
+    [MaxLength(50, ErrorMessage = "Delivery width cannot exceed 50 characters")]
+    public string? DeliveryWidth { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Delivery depth must be non-negative")]
-    public decimal? DeliveryDepth { get; set; }
+    [MaxLength(50, ErrorMessage = "Delivery depth cannot exceed 50 characters")]
+    public string? DeliveryDepth { get; set; }
 
     public bool IsFeatured { get; set; }
     public bool IsActive { get; set; }

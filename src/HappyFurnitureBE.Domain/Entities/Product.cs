@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HappyFurnitureBE.Domain.Entities;
 
@@ -20,14 +19,14 @@ public class Product : BaseEntity
 
     public string? DescriptionEn { get; set; }
 
-    [Column(TypeName = "decimal(10,2)")]
-    public decimal? DimensionsHeight { get; set; }
+    [MaxLength(50)]
+    public string? DimensionsHeight { get; set; }
 
-    [Column(TypeName = "decimal(10,2)")]
-    public decimal? DimensionsWidth { get; set; }
+    [MaxLength(50)]
+    public string? DimensionsWidth { get; set; }
 
-    [Column(TypeName = "decimal(10,2)")]
-    public decimal? DimensionsDepth { get; set; }
+    [MaxLength(50)]
+    public string? DimensionsDepth { get; set; }
 
     [MaxLength(10)]
     public string DimensionUnit { get; set; } = "cm";
@@ -40,17 +39,17 @@ public class Product : BaseEntity
 
     public string? DeliveryInfoEn { get; set; }
 
-    [Column(TypeName = "decimal(10,2)")]
-    public decimal? Weight { get; set; }
+    [MaxLength(50)]
+    public string? Weight { get; set; }
 
-    [Column(TypeName = "decimal(10,2)")]
-    public decimal? DeliveryHeight { get; set; }
+    [MaxLength(50)]
+    public string? DeliveryHeight { get; set; }
 
-    [Column(TypeName = "decimal(10,2)")]
-    public decimal? DeliveryWidth { get; set; }
+    [MaxLength(50)]
+    public string? DeliveryWidth { get; set; }
 
-    [Column(TypeName = "decimal(10,2)")]
-    public decimal? DeliveryDepth { get; set; }
+    [MaxLength(50)]
+    public string? DeliveryDepth { get; set; }
 
     public bool IsFeatured { get; set; } = false;
 

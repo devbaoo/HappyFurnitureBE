@@ -182,11 +182,29 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
         return productCategory;
     }
 
+    public async Task DeleteProductCategoriesAsync(int productId)
+    {
+        var existing = await _context.ProductCategories
+            .Where(pc => pc.ProductId == productId)
+            .ToListAsync();
+        _context.ProductCategories.RemoveRange(existing);
+        await _context.SaveChangesAsync();
+    }
+
     // Product Materials
     public async Task<ProductMaterial> AddProductMaterialAsync(ProductMaterial productMaterial)
     {
         _context.ProductMaterials.Add(productMaterial);
         await _context.SaveChangesAsync();
         return productMaterial;
+    }
+
+    public async Task DeleteProductMaterialsAsync(int productId)
+    {
+        var existing = await _context.ProductMaterials
+            .Where(pm => pm.ProductId == productId)
+            .ToListAsync();
+        _context.ProductMaterials.RemoveRange(existing);
+        await _context.SaveChangesAsync();
     }
 }

@@ -371,6 +371,28 @@ public class ProductsController : ControllerBase
 
             await _productRepository.UpdateAsync(product);
 
+            // Update categories: remove all existing then re-add
+            await _productRepository.DeleteProductCategoriesAsync(id);
+            foreach (var categoryId in request.CategoryIds)
+            {
+                await _productRepository.AddProductCategoryAsync(new ProductCategory
+                {
+                    ProductId = id,
+                    CategoryId = categoryId
+                });
+            }
+
+            // Update materials: remove all existing then re-add
+            await _productRepository.DeleteProductMaterialsAsync(id);
+            foreach (var materialId in request.MaterialIds)
+            {
+                await _productRepository.AddProductMaterialAsync(new ProductMaterial
+                {
+                    ProductId = id,
+                    MaterialId = materialId
+                });
+            }
+
             var updatedProductWithDetails = await _productRepository.GetProductWithDetailsAsync(product.Id);
             var productDto = MapToProductDto(updatedProductWithDetails ?? product);
             return Ok(productDto);
@@ -449,18 +471,18 @@ public class ProductsController : ControllerBase
         [FromForm] string slug = "",
         [FromForm] string? description = null,
         [FromForm] string? descriptionEn = null,
-        [FromForm] decimal? dimensionsHeight = null,
-        [FromForm] decimal? dimensionsWidth = null,
-        [FromForm] decimal? dimensionsDepth = null,
+        [FromForm] string? dimensionsHeight = null,
+        [FromForm] string? dimensionsWidth = null,
+        [FromForm] string? dimensionsDepth = null,
         [FromForm] string dimensionUnit = "cm",
         [FromForm] string? detail = null,
         [FromForm] string? detailEn = null,
         [FromForm] string? deliveryInfo = null,
         [FromForm] string? deliveryInfoEn = null,
-        [FromForm] decimal? weight = null,
-        [FromForm] decimal? deliveryHeight = null,
-        [FromForm] decimal? deliveryWidth = null,
-        [FromForm] decimal? deliveryDepth = null,
+        [FromForm] string? weight = null,
+        [FromForm] string? deliveryHeight = null,
+        [FromForm] string? deliveryWidth = null,
+        [FromForm] string? deliveryDepth = null,
         [FromForm] bool isFeatured = false,
         [FromForm] bool isActive = true,
         [FromForm] int? assemblyId = null,
