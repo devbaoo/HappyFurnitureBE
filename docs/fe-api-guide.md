@@ -280,9 +280,17 @@ Content-Type: application/json
   "isFeatured": false,
   "isActive": true,
   "categoryIds": [1, 2],
-  "materialIds": [3]
+  "materialIds": [3],
+  "imageUrls": [
+    "https://cdn.example.com/products/sofa-1.jpg",
+    "https://cdn.example.com/products/sofa-2.jpg"
+  ]
 }
 ```
+
+`imageUrls` là input đơn giản để backend tạo/cập nhật các bản ghi trong `ProductImages` cho ảnh chung của product.
+`images` trong response là dữ liệu đầy đủ lấy từ bảng `ProductImages` sau khi lưu.
+Các ảnh gắn riêng cho variant nên quản lý qua endpoint `ProductImages` hoặc luồng variant riêng, không trộn vào `imageUrls`.
 
 #### Bảng fields i18n
 

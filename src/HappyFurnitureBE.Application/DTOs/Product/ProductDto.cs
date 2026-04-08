@@ -199,6 +199,10 @@ public class UpdateProductRequest
 
     public List<int> CategoryIds { get; set; } = new();
     public List<int> MaterialIds { get; set; } = new();
+
+    // Nếu truyền lên thì backend sẽ sync lại ảnh của product.
+    // Nếu bỏ qua field này thì backend sẽ giữ nguyên ProductImages hiện có.
+    public List<string>? ImageUrls { get; set; }
 }
 
 public class ProductFilterParams
@@ -213,6 +217,8 @@ public class ProductFilterParams
     public string? SortBy { get; set; } = "CreatedAt"; // Name, CreatedAt
     public string? SortOrder { get; set; } = "desc"; // asc, desc
 }
+
+// ─── Product Image DTOs ──────────────────────────────────────────────────────
 
 public class ProductImageDto
 {
@@ -257,6 +263,8 @@ public class UpdateProductImageRequest
     public int SortOrder { get; set; }
 }
 
+// ─── Product Variant DTOs ────────────────────────────────────────────────────
+
 public class ProductVariantDto
 {
     public int Id { get; set; }
@@ -267,6 +275,7 @@ public class ProductVariantDto
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+    public List<ProductVariantImageDto> Images { get; set; } = new();
 }
 
 public class CreateProductVariantRequest
@@ -312,4 +321,49 @@ public class UpdateProductVariantRequest
     public string? ImageUrl { get; set; }
 
     public bool IsActive { get; set; }
+}
+
+// ─── Product Variant Image DTOs ──────────────────────────────────────────────
+
+public class ProductVariantImageDto
+{
+    public int Id { get; set; }
+    public int VariantId { get; set; }
+    public string ImageUrl { get; set; } = string.Empty;
+    public string? AltText { get; set; }
+    public bool IsPrimary { get; set; }
+    public int SortOrder { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+}
+
+public class CreateProductVariantImageRequest
+{
+    [Required(ErrorMessage = "Variant ID is required")]
+    public int VariantId { get; set; }
+
+    [Required(ErrorMessage = "Image URL is required")]
+    [MaxLength(500, ErrorMessage = "Image URL cannot exceed 500 characters")]
+    public string ImageUrl { get; set; } = string.Empty;
+
+    [MaxLength(255, ErrorMessage = "Alt text cannot exceed 255 characters")]
+    public string? AltText { get; set; }
+
+    public bool IsPrimary { get; set; } = false;
+
+    public int SortOrder { get; set; } = 0;
+}
+
+public class UpdateProductVariantImageRequest
+{
+    [Required(ErrorMessage = "Image URL is required")]
+    [MaxLength(500, ErrorMessage = "Image URL cannot exceed 500 characters")]
+    public string ImageUrl { get; set; } = string.Empty;
+
+    [MaxLength(255, ErrorMessage = "Alt text cannot exceed 255 characters")]
+    public string? AltText { get; set; }
+
+    public bool IsPrimary { get; set; }
+
+    public int SortOrder { get; set; }
 }

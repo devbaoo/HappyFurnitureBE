@@ -393,6 +393,29 @@ public class ProductsController : ControllerBase
                 });
             }
 
+            if (request.ImageUrls != null)
+            {
+                // Xóa tất cả ảnh product rồi thêm mới
+                await _productRepository.DeleteProductImagesAsync(id);
+
+                var normalizedImageUrls = request.ImageUrls
+                    .Where(url => !string.IsNullOrWhiteSpace(url))
+                    .Select(url => url.Trim())
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+
+                for (int i = 0; i < normalizedImageUrls.Count; i++)
+                {
+                    await _productRepository.AddProductImageAsync(new ProductImage
+                    {
+                        ProductId = id,
+                        ImageUrl = normalizedImageUrls[i],
+                        IsPrimary = i == 0,
+                        SortOrder = i + 1
+                    });
+                }
+            }
+
             var updatedProductWithDetails = await _productRepository.GetProductWithDetailsAsync(product.Id);
             var productDto = MapToProductDto(updatedProductWithDetails ?? product);
             return Ok(productDto);
@@ -686,7 +709,18 @@ public class ProductsController : ControllerBase
                 ImageUrl = pv.ImageUrl,
                 IsActive = pv.IsActive,
                 CreatedAt = pv.CreatedAt,
-                UpdatedAt = pv.UpdatedAt
+                UpdatedAt = pv.UpdatedAt,
+                Images = pv.ProductVariantImages?.Select(pvi => new ProductVariantImageDto
+                {
+                    Id = pvi.Id,
+                    VariantId = pvi.VariantId,
+                    ImageUrl = pvi.ImageUrl,
+                    AltText = pvi.AltText,
+                    IsPrimary = pvi.IsPrimary,
+                    SortOrder = pvi.SortOrder,
+                    CreatedAt = pvi.CreatedAt,
+                    UpdatedAt = pvi.UpdatedAt
+                }).ToList() ?? new List<ProductVariantImageDto>()
             }).ToList() ?? new List<ProductVariantDto>(),
             Images = product.ProductImages?.Select(pi => new ProductImageDto
             {
