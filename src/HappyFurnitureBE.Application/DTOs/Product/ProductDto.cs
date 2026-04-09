@@ -270,6 +270,7 @@ public class ProductVariantDto
     public int Id { get; set; }
     public int ProductId { get; set; }
     public string? ColorName { get; set; }
+    public string? Slug { get; set; }
     public string? ColorCode { get; set; }
     public string? ImageUrl { get; set; }
     public bool IsActive { get; set; }
@@ -285,6 +286,10 @@ public class CreateProductVariantRequest
 
     [MaxLength(100, ErrorMessage = "Color name cannot exceed 100 characters")]
     public string? ColorName { get; set; }
+
+    /// <summary>Tự động tạo từ ColorName nếu để trống</summary>
+    [MaxLength(150, ErrorMessage = "Slug cannot exceed 150 characters")]
+    public string? Slug { get; set; }
 
     [MaxLength(7, ErrorMessage = "Color code cannot exceed 7 characters")]
     public string? ColorCode { get; set; }
@@ -303,6 +308,9 @@ public class CreateProductVariantWithImageRequest
     [MaxLength(100, ErrorMessage = "Color name cannot exceed 100 characters")]
     public string? ColorName { get; set; }
 
+    [MaxLength(150, ErrorMessage = "Slug cannot exceed 150 characters")]
+    public string? Slug { get; set; }
+
     [MaxLength(7, ErrorMessage = "Color code cannot exceed 7 characters")]
     public string? ColorCode { get; set; }
 
@@ -313,6 +321,9 @@ public class UpdateProductVariantRequest
 {
     [MaxLength(100, ErrorMessage = "Color name cannot exceed 100 characters")]
     public string? ColorName { get; set; }
+
+    [MaxLength(150, ErrorMessage = "Slug cannot exceed 150 characters")]
+    public string? Slug { get; set; }
 
     [MaxLength(7, ErrorMessage = "Color code cannot exceed 7 characters")]
     public string? ColorCode { get; set; }

@@ -160,6 +160,40 @@ public class ProductsController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Resolve full slug có thể chứa variant slug ở cuối.
+    /// VD: "ban-phong-khach-2-mau-trang" → product slug "ban-phong-khach-2", variantSlug "mau-trang"
+    /// </summary>
+    [HttpGet("resolve-slug/{**fullSlug}")]
+    public async Task<ActionResult> ResolveSlug(string fullSlug)
+    {
+        try
+        {
+            // Thử exact match trước
+            var product = await _productRepository.GetBySlugAsync(fullSlug);
+            if (product != null)
+                return Ok(new { product = MapToProductDto(product), variantSlug = (string?)null });
+
+            // Progressive strip từ phải sang trái
+            var parts = fullSlug.Split('-');
+            for (int i = parts.Length - 1; i > 0; i--)
+            {
+                var candidateSlug = string.Join("-", parts.Take(i));
+                var candidateVariantSlug = string.Join("-", parts.Skip(i));
+                var candidate = await _productRepository.GetBySlugAsync(candidateSlug);
+                if (candidate != null)
+                    return Ok(new { product = MapToProductDto(candidate), variantSlug = candidateVariantSlug });
+            }
+
+            return NotFound(new { message = "Product not found" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error resolving slug {FullSlug}", fullSlug);
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
+
     [HttpGet("slug/{slug}")]
     public async Task<ActionResult<ProductDto>> GetProductBySlug(string slug)
     {
@@ -705,6 +739,7 @@ public class ProductsController : ControllerBase
                 Id = pv.Id,
                 ProductId = pv.ProductId,
                 ColorName = pv.ColorName,
+                Slug = pv.Slug,
                 ColorCode = pv.ColorCode,
                 ImageUrl = pv.ImageUrl,
                 IsActive = pv.IsActive,
