@@ -1,3 +1,6 @@
+using System.Globalization;
+using System.Text;
+using System.Text.RegularExpressions;
 using HappyFurnitureBE.Application.DTOs.Common;
 using HappyFurnitureBE.Application.DTOs.Product;
 using HappyFurnitureBE.Application.Interfaces;
@@ -106,6 +109,7 @@ public class ProductVariantsController : ControllerBase
             {
                 ProductId = request.ProductId,
                 ColorName = request.ColorName,
+                Slug = GenerateSlug(request.Slug ?? request.ColorName),
                 ColorCode = request.ColorCode,
                 ImageUrl = request.ImageUrl,
                 IsActive = request.IsActive
@@ -113,7 +117,7 @@ public class ProductVariantsController : ControllerBase
 
             var createdVariant = await _productRepository.AddProductVariantAsync(productVariant);
             var variantDto = MapToProductVariantDto(createdVariant);
-            
+
             return CreatedAtAction(nameof(GetProductVariant), new { id = createdVariant.Id }, variantDto);
         }
         catch (Exception ex)
@@ -136,6 +140,7 @@ public class ProductVariantsController : ControllerBase
             }
 
             productVariant.ColorName = request.ColorName;
+            productVariant.Slug = GenerateSlug(request.Slug ?? request.ColorName);
             productVariant.ColorCode = request.ColorCode;
             productVariant.ImageUrl = request.ImageUrl;
             productVariant.IsActive = request.IsActive;
@@ -232,6 +237,7 @@ public class ProductVariantsController : ControllerBase
             {
                 ProductId = productId,
                 ColorName = colorName,
+                Slug = GenerateSlug(colorName),
                 ColorCode = colorCode,
                 ImageUrl = imageUrl,
                 IsActive = true,
@@ -451,6 +457,7 @@ public class ProductVariantsController : ControllerBase
             Id = productVariant.Id,
             ProductId = productVariant.ProductId,
             ColorName = productVariant.ColorName,
+            Slug = productVariant.Slug,
             ColorCode = productVariant.ColorCode,
             ImageUrl = productVariant.ImageUrl,
             IsActive = productVariant.IsActive,
@@ -459,6 +466,30 @@ public class ProductVariantsController : ControllerBase
             Images = productVariant.ProductVariantImages?.Select(MapToVariantImageDto).ToList()
                 ?? new List<ProductVariantImageDto>()
         };
+    }
+
+    private static string GenerateSlug(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return "";
+
+        // Lowercase + normalize diacritics
+        var normalized = value.ToLowerInvariant()
+            .Replace("đ", "d")
+            .Replace("Đ", "d");
+
+        normalized = normalized.Normalize(NormalizationForm.FormD);
+        var sb = new StringBuilder();
+        foreach (var c in normalized)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                sb.Append(c);
+        }
+
+        var slug = sb.ToString().Normalize(NormalizationForm.FormC);
+        slug = Regex.Replace(slug, @"[^a-z0-9\s-]", "");
+        slug = Regex.Replace(slug, @"\s+", "-");
+        slug = slug.Trim('-');
+        return slug;
     }
 
     private static ProductVariantImageDto MapToVariantImageDto(ProductVariantImage image)
