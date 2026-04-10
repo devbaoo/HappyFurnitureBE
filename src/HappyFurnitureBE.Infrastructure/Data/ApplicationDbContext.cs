@@ -21,6 +21,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<ProductImage> ProductImages { get; set; }
     public DbSet<ProductVariantImage> ProductVariantImages { get; set; }
     public DbSet<Contact> Contacts { get; set; }
+    public DbSet<News> News { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -125,6 +126,18 @@ public class ApplicationDbContext : DbContext
                   .WithMany(v => v.ProductVariantImages)
                   .HasForeignKey(pvi => pvi.VariantId)
                   .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure News entity
+        modelBuilder.Entity<News>(entity =>
+        {
+            entity.HasIndex(n => n.Slug).IsUnique();
+            entity.Property(n => n.TitleVi).IsRequired();
+            entity.Property(n => n.Slug).IsRequired();
+            entity.Property(n => n.Type)
+                  .HasConversion<string>();
+            entity.Property(n => n.Category)
+                  .HasConversion<string?>();
         });
 
         // Configure BaseEntity properties for all entities
