@@ -56,13 +56,12 @@ public class NewsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<object>> GetAll(
         [FromQuery] string? type,
-        [FromQuery] string? category,
         [FromQuery] string? title,
         [FromQuery] bool? isActive,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10)
     {
-        var all = await _newsRepo.GetAllWithFilterAsync(type, category, title, isActive);
+        var all = await _newsRepo.GetAllWithFilterAsync(type, title, isActive);
         var list = all.ToList();
         var total = list.Count;
         var items = list.Skip((page - 1) * pageSize).Take(pageSize).Select(MapToDto).ToList();
@@ -91,8 +90,6 @@ public class NewsController : ControllerBase
             IsActive = req.IsActive,
             SortOrder = req.SortOrder,
             Type = Enum.Parse<NewsType>(req.Type),
-            Category = string.IsNullOrWhiteSpace(req.Category) ? null : Enum.Parse<ActivityCategory>(req.Category),
-            Year = req.Year
         };
 
         var created = await _newsRepo.AddAsync(news);
@@ -121,8 +118,6 @@ public class NewsController : ControllerBase
         existing.IsActive = req.IsActive;
         existing.SortOrder = req.SortOrder;
         existing.Type = Enum.Parse<NewsType>(req.Type);
-        existing.Category = string.IsNullOrWhiteSpace(req.Category) ? null : Enum.Parse<ActivityCategory>(req.Category);
-        existing.Year = req.Year;
 
         await _newsRepo.UpdateAsync(existing);
         return Ok(MapToDto(existing));
@@ -156,8 +151,6 @@ public class NewsController : ControllerBase
             IsActive = n.IsActive,
             SortOrder = n.SortOrder,
             Type = n.Type.ToString(),
-            Category = n.Category?.ToString(),
-            Year = n.Year,
             CreatedAt = n.CreatedAt,
             UpdatedAt = n.UpdatedAt
         };

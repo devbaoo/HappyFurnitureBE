@@ -14,8 +14,6 @@ public class NewsDto
     public bool IsActive { get; set; }
     public int SortOrder { get; set; }
     public string Type { get; set; } = string.Empty;
-    public string? Category { get; set; }
-    public int? Year { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
@@ -42,8 +40,6 @@ public class CreateNewsRequest
     public bool IsActive { get; set; } = true;
     public int SortOrder { get; set; } = 0;
     public string Type { get; set; } = "Event";
-    public string? Category { get; set; }
-    public int? Year { get; set; }
 }
 
 public class UpdateNewsRequest
@@ -59,15 +55,12 @@ public class UpdateNewsRequest
     public bool IsActive { get; set; }
     public int SortOrder { get; set; }
     public string Type { get; set; } = "Event";
-    public string? Category { get; set; }
-    public int? Year { get; set; }
 }
 
 public class NewsFilterParams
 {
     public string? Title { get; set; }
     public string? Type { get; set; }
-    public string? Category { get; set; }
     public bool? IsActive { get; set; }
     public string? SortBy { get; set; } = "CreatedAt";
     public string? SortOrder { get; set; } = "desc";

@@ -8,12 +8,6 @@ public enum NewsType
     Activity = 1
 }
 
-public enum ActivityCategory
-{
-    TeamBuilding = 0,
-    FactoryTour = 1
-}
-
 public class News : BaseEntity
 {
     [Required]
@@ -45,9 +39,5 @@ public class News : BaseEntity
     // Event | Activity
     public NewsType Type { get; set; } = NewsType.Event;
 
-    // Chi co y nghia voi Activity: TeamBuilding | FactoryTour
-    public ActivityCategory? Category { get; set; }
 
-    // Dung cho Event: hien thi trien lam theo nam
-    public int? Year { get; set; }
 }

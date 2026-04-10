@@ -136,8 +136,6 @@ public class ApplicationDbContext : DbContext
             entity.Property(n => n.Slug).IsRequired();
             entity.Property(n => n.Type)
                   .HasConversion<string>();
-            entity.Property(n => n.Category)
-                  .HasConversion<string?>();
         });
 
         // Configure BaseEntity properties for all entities
