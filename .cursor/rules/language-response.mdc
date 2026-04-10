@@ -1,0 +1,21 @@
+---
+description: Always respond in Vietnamese or English only
+alwaysApply: true
+---
+
+# Language Response Rule
+
+You MUST always respond in **Vietnamese** and **English** only.
+
+- **DO NOT** respond in Chinese, or any other language
+- **DO NOT** mix Chinese characters in your responses
+- Use Vietnamese (Tiếng Việt) as the primary language for explanations
+- Use English when needed for technical terms, code, or as requested
+- Keep all comments, documentation, and communication in Vietnamese or English
+
+## Example
+
+```
+✅ CORRECT: "Xin chào! I will help you with this issue."
+❌ WRONG:   "你好！我会帮助你解决这个问题。"
+```
