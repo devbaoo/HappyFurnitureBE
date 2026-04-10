@@ -34,8 +34,7 @@ public class NewsRepository : BaseRepository<News>, INewsRepository
     {
         return await _dbSet
             .Where(n => n.Type == NewsType.Event && n.IsActive)
-            .OrderByDescending(n => n.Year)
-            .ThenBy(n => n.SortOrder)
+            .OrderBy(n => n.SortOrder)
             .ToListAsync();
     }
 
@@ -48,15 +47,12 @@ public class NewsRepository : BaseRepository<News>, INewsRepository
     }
 
     public async Task<IEnumerable<News>> GetAllWithFilterAsync(
-        string? type, string? category, string? title, bool? isActive)
+        string? type, string? title, bool? isActive)
     {
         var query = _dbSet.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(type))
             query = query.Where(n => n.Type.ToString() == type);
-
-        if (!string.IsNullOrWhiteSpace(category))
-            query = query.Where(n => n.Category.HasValue && n.Category.Value.ToString() == category);
 
         if (!string.IsNullOrWhiteSpace(title))
             query = query.Where(n =>
