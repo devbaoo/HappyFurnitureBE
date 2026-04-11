@@ -38,6 +38,24 @@ public class NewsController : ControllerBase
     }
 
     /// <summary>
+    /// Public: Lấy danh sách News & Company Activities (phân cách riêng) - alias cho /api/News
+    /// </summary>
+    [HttpGet("active")]
+    public async Task<ActionResult<NewsSectionResponse>> GetActiveNews()
+    {
+        var news = await _newsRepo.GetActiveNewsAsync();
+        var activities = await _newsRepo.GetActiveCompanyActivitiesAsync();
+
+        var response = new NewsSectionResponse
+        {
+            News = news.Select(MapToListDto).ToList(),
+            CompanyActivities = activities.Select(MapToListDto).ToList()
+        };
+
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Public: Lấy danh sách News (tin tức)
     /// </summary>
     [HttpGet("news")]
