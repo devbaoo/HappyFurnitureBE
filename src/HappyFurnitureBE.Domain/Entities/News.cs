@@ -4,8 +4,8 @@ namespace HappyFurnitureBE.Domain.Entities;
 
 public enum NewsType
 {
-    Event = 0,
-    Activity = 1
+    News = 0,
+    CompanyActivity = 1
 }
 
 public class News : BaseEntity
@@ -21,12 +21,23 @@ public class News : BaseEntity
     [MaxLength(255)]
     public string Slug { get; set; } = string.Empty;
 
-    public string? ContentVi { get; set; }
+    [MaxLength(255)]
+    public string? MetaTitleVi { get; set; }
 
-    public string? ContentEn { get; set; }
+    [MaxLength(255)]
+    public string? MetaTitleEn { get; set; }
+
+    [MaxLength(500)]
+    public string? MetaDescriptionVi { get; set; }
+
+    [MaxLength(500)]
+    public string? MetaDescriptionEn { get; set; }
 
     [MaxLength(500)]
     public string? ImageUrl { get; set; }
+
+    [MaxLength(500)]
+    public string? BannerUrl { get; set; }
 
     public string? ExcerptVi { get; set; }
 
@@ -36,8 +47,7 @@ public class News : BaseEntity
 
     public int SortOrder { get; set; } = 0;
 
-    // Event | Activity
-    public NewsType Type { get; set; } = NewsType.Event;
+    public NewsType Type { get; set; } = NewsType.News;
 
-
+    public ICollection<ContentBlock> ContentBlocks { get; set; } = new List<ContentBlock>();
 }

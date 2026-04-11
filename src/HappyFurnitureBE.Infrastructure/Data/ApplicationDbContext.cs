@@ -22,6 +22,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<ProductVariantImage> ProductVariantImages { get; set; }
     public DbSet<Contact> Contacts { get; set; }
     public DbSet<News> News { get; set; }
+    public DbSet<ContentBlock> ContentBlocks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -135,6 +136,18 @@ public class ApplicationDbContext : DbContext
             entity.Property(n => n.TitleVi).IsRequired();
             entity.Property(n => n.Slug).IsRequired();
             entity.Property(n => n.Type)
+                  .HasConversion<string>();
+
+            entity.HasMany(n => n.ContentBlocks)
+                  .WithOne(cb => cb.News)
+                  .HasForeignKey(cb => cb.NewsId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure ContentBlock entity
+        modelBuilder.Entity<ContentBlock>(entity =>
+        {
+            entity.Property(cb => cb.Type)
                   .HasConversion<string>();
         });
 

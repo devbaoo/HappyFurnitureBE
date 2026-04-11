@@ -24,25 +24,16 @@ public class NewsRepository : BaseRepository<News>, INewsRepository
     public async Task<IEnumerable<News>> GetActiveNewsAsync()
     {
         return await _dbSet
-            .Where(n => n.IsActive)
-            .OrderByDescending(n => n.Type)
-            .ThenBy(n => n.SortOrder)
+            .Where(n => n.Type == NewsType.News && n.IsActive)
+            .OrderByDescending(n => n.CreatedAt)
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<News>> GetActiveEventsAsync()
+    public async Task<IEnumerable<News>> GetActiveCompanyActivitiesAsync()
     {
         return await _dbSet
-            .Where(n => n.Type == NewsType.Event && n.IsActive)
-            .OrderBy(n => n.SortOrder)
-            .ToListAsync();
-    }
-
-    public async Task<IEnumerable<News>> GetActiveActivitiesAsync()
-    {
-        return await _dbSet
-            .Where(n => n.Type == NewsType.Activity && n.IsActive)
-            .OrderBy(n => n.SortOrder)
+            .Where(n => n.Type == NewsType.CompanyActivity && n.IsActive)
+            .OrderByDescending(n => n.CreatedAt)
             .ToListAsync();
     }
 
