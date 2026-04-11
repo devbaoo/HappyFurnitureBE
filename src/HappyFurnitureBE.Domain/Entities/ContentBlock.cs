@@ -38,4 +38,8 @@ public class ContentBlock : BaseEntity
     public int SortOrder { get; set; } = 0;
 
     public bool IsFullWidth { get; set; } = false;
+
+    /// <summary>Bố cục ảnh: full | left | right. Chỉ dùng khi Type = Image.</summary>
+    [MaxLength(10)]
+    public string? ImagePosition { get; set; }
 }

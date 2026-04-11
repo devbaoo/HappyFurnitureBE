@@ -49,6 +49,8 @@ public class ContentBlockDto
     public string? ImageAltEn { get; set; }
     public int SortOrder { get; set; }
     public bool IsFullWidth { get; set; }
+    /// <summary>Bố cục ảnh: full | left | right</summary>
+    public string? ImagePosition { get; set; }
 }
 
 public class NewsDetailDto
@@ -65,6 +67,8 @@ public class NewsDetailDto
     public string? BannerUrl { get; set; }
     public string? ExcerptVi { get; set; }
     public string? ExcerptEn { get; set; }
+    public bool IsActive { get; set; }
+    public int SortOrder { get; set; }
     public string Type { get; set; } = string.Empty;
     public List<ContentBlockDto> ContentBlocks { get; set; } = new();
     public DateTime CreatedAt { get; set; }
@@ -133,6 +137,8 @@ public class CreateContentBlockRequest
     public string? ImageAltEn { get; set; }
     public int SortOrder { get; set; } = 0;
     public bool IsFullWidth { get; set; } = false;
+    /// <summary>Bố cục ảnh: full | left | right</summary>
+    public string? ImagePosition { get; set; }
 }
 
 public class NewsFilterParams

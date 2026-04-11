@@ -175,7 +175,8 @@ public class NewsController : ControllerBase
                     ImageAltVi = blockReq.ImageAltVi,
                     ImageAltEn = blockReq.ImageAltEn,
                     SortOrder = blockReq.SortOrder,
-                    IsFullWidth = blockReq.IsFullWidth
+                    IsFullWidth = blockReq.IsFullWidth,
+                    ImagePosition = blockReq.ImagePosition
                 };
                 await _contentBlockRepo.AddAsync(block);
             }
@@ -232,7 +233,8 @@ public class NewsController : ControllerBase
                     ImageAltVi = blockReq.ImageAltVi,
                     ImageAltEn = blockReq.ImageAltEn,
                     SortOrder = blockReq.SortOrder,
-                    IsFullWidth = blockReq.IsFullWidth
+                    IsFullWidth = blockReq.IsFullWidth,
+                    ImagePosition = blockReq.ImagePosition
                 };
                 await _contentBlockRepo.AddAsync(block);
             }
@@ -275,6 +277,8 @@ public class NewsController : ControllerBase
             BannerUrl = news.BannerUrl,
             ExcerptVi = news.ExcerptVi,
             ExcerptEn = news.ExcerptEn,
+            IsActive = news.IsActive,
+            SortOrder = news.SortOrder,
             Type = news.Type.ToString(),
             ContentBlocks = blocks.Select(MapContentBlockToDto).ToList(),
             CreatedAt = news.CreatedAt,
@@ -325,6 +329,15 @@ public class NewsController : ControllerBase
 
     private static ContentBlockDto MapContentBlockToDto(ContentBlock cb)
     {
+        // Khi imagePosition chưa được set (data cũ), fallback an toàn:
+        // - Có giá trị hợp lệ ("full"/"left"/"right") → dùng nguyên
+        // - null/rỗng + isFullWidth=true  → "full"
+        // - null/rỗng + isFullWidth=false → "full" (an toàn, không đoán left/right)
+        var validPositions = new[] { "full", "left", "right" };
+        var imagePosition = (!string.IsNullOrWhiteSpace(cb.ImagePosition) && validPositions.Contains(cb.ImagePosition))
+            ? cb.ImagePosition
+            : (cb.IsFullWidth ? "full" : "full");
+
         return new ContentBlockDto
         {
             Id = cb.Id,
@@ -338,7 +351,8 @@ public class NewsController : ControllerBase
             ImageAltVi = cb.ImageAltVi,
             ImageAltEn = cb.ImageAltEn,
             SortOrder = cb.SortOrder,
-            IsFullWidth = cb.IsFullWidth
+            IsFullWidth = cb.IsFullWidth,
+            ImagePosition = imagePosition
         };
     }
 }
