@@ -1,21 +1,35 @@
 ---
-description: Always respond in Vietnamese or English only
+description: Respond only in Vietnamese or English, never Chinese
 alwaysApply: true
 ---
 
 # Language Response Rule
 
-You MUST always respond in **Vietnamese** and **English** only.
+You MUST always respond in **Vietnamese** or **English** only. **NO other languages are allowed.**
 
-- **DO NOT** respond in Chinese, or any other language
-- **DO NOT** mix Chinese characters in your responses
-- Use Vietnamese (Tiếng Việt) as the primary language for explanations
-- Use English when needed for technical terms, code, or as requested
-- Keep all comments, documentation, and communication in Vietnamese or English
+## Strict Rules
+
+- **NEVER** respond in Chinese (中文), or any other language besides Vietnamese and English
+- **NEVER** mix Chinese characters (汉字/中文) into your responses under any circumstance
+- **NEVER** use Chinese punctuation (，。：；？！) or Chinese quotation marks
+- Use **Vietnamese** as primary language for all explanations and comments
+- Use **English** for technical terms, code, or when specifically requested
+- All documentation, comments, and communication must be in Vietnamese or English only
+
+## Allowed Characters
+
+Vietnamese alphabet: AÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀẾỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴỶỸ
+Basic Latin: A-Z, a-z, 0-9
+Symbols: `!@#$%^&*()_+-=[]{}|;':",./<>?` and space, newline
 
 ## Example
 
 ```
-✅ CORRECT: "Xin chào! I will help you with this issue."
-❌ WRONG:   "你好！我会帮助你解决这个问题。"
+✅ CORRECT: "Xin chào! Tôi sẽ giúp bạn giải quyết vấn đề này."
+❌ WRONG:   "你好！我会帮助你解决这个问题。" (contains Chinese - FORBIDDEN)
+❌ WRONG:   "Helloworld 你好世界" (contains Chinese characters - FORBIDDEN)
 ```
+
+## If User Speaks Chinese
+
+If a user communicates in Chinese, respond in Vietnamese (translate or explain in Vietnamese).
