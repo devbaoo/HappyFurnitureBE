@@ -37,6 +37,7 @@ builder.Services.AddScoped<IContactRepository, ContactRepository>();
 builder.Services.AddScoped<INewsRepository, NewsRepository>();
 builder.Services.AddScoped<IContentBlockRepository, ContentBlockRepository>();
 builder.Services.AddScoped<ICertificateRepository, CertificateRepository>();
+builder.Services.AddScoped<ICompanyInfoRepository, CompanyInfoRepository>();
 
 // Register services
 builder.Services.AddScoped<IAuthService, AuthService>();

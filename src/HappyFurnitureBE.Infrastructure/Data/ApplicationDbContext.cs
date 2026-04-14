@@ -24,6 +24,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<News> News { get; set; }
     public DbSet<ContentBlock> ContentBlocks { get; set; }
     public DbSet<Certificate> Certificates { get; set; }
+    public DbSet<CompanyInfo> CompanyInfos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
