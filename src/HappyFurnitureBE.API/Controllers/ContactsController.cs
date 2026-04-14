@@ -42,16 +42,20 @@ public class ContactsController : ControllerBase
     }
 
     /// <summary>
-    /// Get all contacts (admin only). Filter by isRead.
+    /// Get all contacts (admin only). Filter by isRead. Supports pagination.
     /// </summary>
     [HttpGet]
     [Authorize]
-    public async Task<ActionResult<IEnumerable<ContactResponse>>> GetAll([FromQuery] bool? isRead)
+    public async Task<ActionResult<object>> GetAll(
+        [FromQuery] bool? isRead,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
         try
         {
-            var contacts = await _contactService.GetAllContactsAsync(isRead);
-            return Ok(contacts);
+            var (items, total) = await _contactService.GetAllContactsAsync(isRead, page, pageSize);
+            var totalPages = (int)Math.Ceiling((double)total / pageSize);
+            return Ok(new { items, totalCount = total, pageNumber = page, pageSize, totalPages });
         }
         catch (Exception ex)
         {

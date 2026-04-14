@@ -43,6 +43,15 @@ public class ContactService : IContactService
         return contacts.Select(MapToResponse);
     }
 
+    public async Task<(IEnumerable<ContactResponse> Items, int TotalCount)> GetAllContactsAsync(bool? isRead, int page, int pageSize)
+    {
+        var contacts = await _contactRepository.GetAllWithFilterAsync(isRead);
+        var list = contacts.ToList();
+        var total = list.Count;
+        var pagedItems = list.Skip((page - 1) * pageSize).Take(pageSize).Select(MapToResponse);
+        return (pagedItems, total);
+    }
+
     public async Task<ContactResponse?> GetContactByIdAsync(int id)
     {
         var contact = await _contactRepository.GetByIdAsync(id);
