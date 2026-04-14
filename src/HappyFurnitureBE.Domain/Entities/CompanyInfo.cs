@@ -26,5 +26,7 @@ public class CompanyInfo : BaseEntity
     [MaxLength(50)]
     public string? FaxEn { get; set; }
 
+    public int SortOrder { get; set; } = 0;
+
     public bool IsActive { get; set; } = true;
 }

@@ -15,7 +15,8 @@ public class CompanyInfoRepository : BaseRepository<CompanyInfo>, ICompanyInfoRe
     {
         return await _dbSet
             .Where(c => c.IsActive)
-            .OrderBy(c => c.CreatedAt)
+            .OrderBy(c => c.SortOrder)
+            .ThenBy(c => c.CreatedAt)
             .ToListAsync();
     }
 
@@ -31,6 +32,6 @@ public class CompanyInfoRepository : BaseRepository<CompanyInfo>, ICompanyInfoRe
         if (isActive.HasValue)
             query = query.Where(c => c.IsActive == isActive.Value);
 
-        return await query.OrderByDescending(c => c.CreatedAt).ToListAsync();
+        return await query.OrderBy(c => c.SortOrder).ThenByDescending(c => c.CreatedAt).ToListAsync();
     }
 }

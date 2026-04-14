@@ -10,6 +10,7 @@ public class CompanyInfoDto
     public string? PhoneEn { get; set; }
     public string? FaxVi { get; set; }
     public string? FaxEn { get; set; }
+    public int SortOrder { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
@@ -25,6 +26,7 @@ public class CompanyInfoListDto
     public string? PhoneEn { get; set; }
     public string? FaxVi { get; set; }
     public string? FaxEn { get; set; }
+    public int SortOrder { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
 }
@@ -38,6 +40,7 @@ public class CreateCompanyInfoRequest
     public string? PhoneEn { get; set; }
     public string? FaxVi { get; set; }
     public string? FaxEn { get; set; }
+    public int SortOrder { get; set; } = 0;
     public bool IsActive { get; set; } = true;
 }
 
@@ -50,5 +53,6 @@ public class UpdateCompanyInfoRequest
     public string? PhoneEn { get; set; }
     public string? FaxVi { get; set; }
     public string? FaxEn { get; set; }
+    public int SortOrder { get; set; }
     public bool IsActive { get; set; }
 }
