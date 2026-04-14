@@ -73,6 +73,7 @@ public class CompanyInfoController : ControllerBase
             PhoneEn = req.PhoneEn,
             FaxVi = req.FaxVi,
             FaxEn = req.FaxEn,
+            SortOrder = req.SortOrder,
             IsActive = req.IsActive
         };
 
@@ -97,6 +98,7 @@ public class CompanyInfoController : ControllerBase
         existing.PhoneEn = req.PhoneEn;
         existing.FaxVi = req.FaxVi;
         existing.FaxEn = req.FaxEn;
+        existing.SortOrder = req.SortOrder;
         existing.IsActive = req.IsActive;
 
         await _repo.UpdateAsync(existing);
@@ -129,6 +131,7 @@ public class CompanyInfoController : ControllerBase
             PhoneEn = c.PhoneEn,
             FaxVi = c.FaxVi,
             FaxEn = c.FaxEn,
+            SortOrder = c.SortOrder,
             IsActive = c.IsActive,
             CreatedAt = c.CreatedAt,
             UpdatedAt = c.UpdatedAt
@@ -147,6 +150,7 @@ public class CompanyInfoController : ControllerBase
             PhoneEn = c.PhoneEn,
             FaxVi = c.FaxVi,
             FaxEn = c.FaxEn,
+            SortOrder = c.SortOrder,
             IsActive = c.IsActive,
             CreatedAt = c.CreatedAt
         };
