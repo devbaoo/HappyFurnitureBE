@@ -34,7 +34,7 @@ public class UploadController : ControllerBase
             }
 
             // Validate folder
-            var allowedFolders = new[] { "products", "categories", "product-variants", "product-images", "news" };
+            var allowedFolders = new[] { "products", "categories", "product-variants", "product-images", "news", "certificates" };
             if (!allowedFolders.Contains(folder.ToLower()))
             {
                 return BadRequest(new { message = $"Invalid folder. Allowed folders: {string.Join(", ", allowedFolders)}" });
@@ -83,7 +83,7 @@ public class UploadController : ControllerBase
             }
 
             // Validate folder
-            var allowedFolders = new[] { "products", "categories", "product-variants", "product-images", "news" };
+            var allowedFolders = new[] { "products", "categories", "product-variants", "product-images", "news", "certificates" };
             if (!allowedFolders.Contains(folder.ToLower()))
             {
                 return BadRequest(new { message = $"Invalid folder. Allowed folders: {string.Join(", ", allowedFolders)}" });

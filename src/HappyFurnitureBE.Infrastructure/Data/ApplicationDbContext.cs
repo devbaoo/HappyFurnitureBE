@@ -23,6 +23,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Contact> Contacts { get; set; }
     public DbSet<News> News { get; set; }
     public DbSet<ContentBlock> ContentBlocks { get; set; }
+    public DbSet<Certificate> Certificates { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

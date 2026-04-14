@@ -36,6 +36,7 @@ builder.Services.AddScoped<IAssemblyRepository, AssemblyRepository>();
 builder.Services.AddScoped<IContactRepository, ContactRepository>();
 builder.Services.AddScoped<INewsRepository, NewsRepository>();
 builder.Services.AddScoped<IContentBlockRepository, ContentBlockRepository>();
+builder.Services.AddScoped<ICertificateRepository, CertificateRepository>();
 
 // Register services
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -130,7 +131,6 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-
 app.UseHttpsRedirection();
 
 app.UseCors();
@@ -140,7 +140,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-// Database setup removed - manual setup required
 
 app.Run();
