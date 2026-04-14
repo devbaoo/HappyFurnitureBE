@@ -18,13 +18,20 @@ public class CertificatesController : ControllerBase
     }
 
     /// <summary>
-    /// Public: Lấy danh sách Certificate đang hoạt động (cho Client)
+    /// Public: Lấy danh sách Certificate đang hoạt động (cho Client) - có phân trang
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<List<CertificateListDto>>> GetActiveCertificates()
+    public async Task<ActionResult<object>> GetActiveCertificates(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
-        var certificates = await _certificateRepo.GetActiveCertificatesAsync();
-        return Ok(certificates.Select(MapToListDto).ToList());
+        var all = await _certificateRepo.GetActiveCertificatesAsync();
+        var list = all.ToList();
+        var total = list.Count;
+        var totalPages = (int)Math.Ceiling((double)total / pageSize);
+        var items = list.Skip((page - 1) * pageSize).Take(pageSize).Select(MapToListDto).ToList();
+
+        return Ok(new { items, totalCount = total, pageNumber = page, pageSize, totalPages });
     }
 
     /// <summary>

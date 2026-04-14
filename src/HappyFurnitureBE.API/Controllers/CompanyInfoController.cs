@@ -18,13 +18,20 @@ public class CompanyInfoController : ControllerBase
     }
 
     /// <summary>
-    /// Public: Lấy danh sách CompanyInfo đang hoạt động (cho Client)
+    /// Public: Lấy danh sách CompanyInfo đang hoạt động (cho Client) - có phân trang
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<List<CompanyInfoListDto>>> GetActive()
+    public async Task<ActionResult<object>> GetActive(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
-        var items = await _repo.GetActiveAsync();
-        return Ok(items.Select(MapToListDto).ToList());
+        var all = await _repo.GetActiveAsync();
+        var list = all.ToList();
+        var total = list.Count;
+        var totalPages = (int)Math.Ceiling((double)total / pageSize);
+        var items = list.Skip((page - 1) * pageSize).Take(pageSize).Select(MapToListDto).ToList();
+
+        return Ok(new { items, totalCount = total, pageNumber = page, pageSize, totalPages });
     }
 
     /// <summary>
