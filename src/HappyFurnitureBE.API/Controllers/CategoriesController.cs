@@ -298,6 +298,73 @@ public class CategoriesController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Cập nhật category với ảnh - dùng multipart/form-data.
+    /// Field: name (required), parentId (optional), sortOrder (optional), isActive (optional), image (optional, file)
+    /// </summary>
+    [HttpPut("{id}/with-image")]
+    [Authorize(Roles = "admin")]
+    [ApiExplorerSettings(IgnoreApi = true)]
+    public async Task<ActionResult<CategoryDto>> UpdateCategoryWithImage(int id, [FromForm] string name, [FromForm] string? nameEn = null, [FromForm] string? description = null, [FromForm] string? descriptionEn = null, [FromForm] int? parentId = null, [FromForm] int? sortOrder = null, [FromForm] bool isActive = true, [FromForm] IFormFile? image = null)
+    {
+        try
+        {
+            var category = await _categoryRepository.GetByIdAsync(id);
+            if (category == null)
+            {
+                return NotFound(new { message = "Category not found" });
+            }
+
+            // Validate parent category exists if provided
+            if (parentId.HasValue)
+            {
+                var parentCategory = await _categoryRepository.GetByIdAsync(parentId.Value);
+                if (parentCategory == null)
+                {
+                    return BadRequest(new { message = "Parent category not found" });
+                }
+
+                if (parentId == id)
+                {
+                    return BadRequest(new { message = "Category cannot be its own parent" });
+                }
+            }
+
+            // Upload image to Cloudinary if provided
+            if (image != null)
+            {
+                try
+                {
+                    var imageUrl = await _cloudinaryService.UploadImageAsync(image, "categories");
+                    category.ImageUrl = imageUrl;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error uploading category image to Cloudinary");
+                    return BadRequest(new { message = "Error uploading image: " + ex.Message });
+                }
+            }
+
+            category.Name = name;
+            category.NameEn = nameEn;
+            category.Description = description;
+            category.DescriptionEn = descriptionEn;
+            category.ParentId = parentId;
+            category.IsActive = isActive;
+            category.SortOrder = parentId == null ? sortOrder : null;
+
+            await _categoryRepository.UpdateAsync(category);
+            var categoryDto = MapToCategoryDto(category, false);
+
+            return Ok(categoryDto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while updating category with image {CategoryId}", id);
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
+
     private static CategoryDto MapToCategoryDto(Category category, bool includeRelations = false)
     {
         return new CategoryDto
