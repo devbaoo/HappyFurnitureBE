@@ -93,6 +93,22 @@ public class CreateProductRequest
 
     // Image URLs (có thể từ upload trước đó)
     public List<string> ImageUrls { get; set; } = new();
+
+    // Default variant (tự động tạo khi tạo product)
+    [MaxLength(100)]
+    public string? DefaultVariantColorName { get; set; } = "Mặc định";
+
+    [MaxLength(100)]
+    public string? DefaultVariantColorNameEn { get; set; } = "Default";
+
+    [MaxLength(7)]
+    public string? DefaultVariantColorCode { get; set; } = "#FFFFFF";
+
+    [MaxLength(150)]
+    public string? DefaultVariantSlug { get; set; }
+
+    [MaxLength(500)]
+    public string? DefaultVariantImageUrl { get; set; }
 }
 
 public class CreateProductWithImagesRequest
@@ -146,6 +162,22 @@ public class CreateProductWithImagesRequest
 
     public List<int> CategoryIds { get; set; } = new();
     public List<int> MaterialIds { get; set; } = new();
+
+    // Default variant (tự động tạo khi tạo product)
+    [MaxLength(100)]
+    public string? DefaultVariantColorName { get; set; } = "Mặc định";
+
+    [MaxLength(100)]
+    public string? DefaultVariantColorNameEn { get; set; } = "Default";
+
+    [MaxLength(7)]
+    public string? DefaultVariantColorCode { get; set; } = "#FFFFFF";
+
+    [MaxLength(150)]
+    public string? DefaultVariantSlug { get; set; }
+
+    [MaxLength(500)]
+    public string? DefaultVariantImageUrl { get; set; }
 }
 
 public class UpdateProductRequest
@@ -270,6 +302,7 @@ public class ProductVariantDto
     public int Id { get; set; }
     public int ProductId { get; set; }
     public string? ColorName { get; set; }
+    public string? ColorNameEn { get; set; }
     public string? Slug { get; set; }
     public string? ColorCode { get; set; }
     public string? ImageUrl { get; set; }
@@ -286,6 +319,9 @@ public class CreateProductVariantRequest
 
     [MaxLength(100, ErrorMessage = "Color name cannot exceed 100 characters")]
     public string? ColorName { get; set; }
+
+    [MaxLength(100, ErrorMessage = "Color name (EN) cannot exceed 100 characters")]
+    public string? ColorNameEn { get; set; }
 
     /// <summary>Tự động tạo từ ColorName nếu để trống</summary>
     [MaxLength(150, ErrorMessage = "Slug cannot exceed 150 characters")]
@@ -308,6 +344,9 @@ public class CreateProductVariantWithImageRequest
     [MaxLength(100, ErrorMessage = "Color name cannot exceed 100 characters")]
     public string? ColorName { get; set; }
 
+    [MaxLength(100, ErrorMessage = "Color name (EN) cannot exceed 100 characters")]
+    public string? ColorNameEn { get; set; }
+
     [MaxLength(150, ErrorMessage = "Slug cannot exceed 150 characters")]
     public string? Slug { get; set; }
 
@@ -321,6 +360,9 @@ public class UpdateProductVariantRequest
 {
     [MaxLength(100, ErrorMessage = "Color name cannot exceed 100 characters")]
     public string? ColorName { get; set; }
+
+    [MaxLength(100, ErrorMessage = "Color name (EN) cannot exceed 100 characters")]
+    public string? ColorNameEn { get; set; }
 
     [MaxLength(150, ErrorMessage = "Slug cannot exceed 150 characters")]
     public string? Slug { get; set; }
