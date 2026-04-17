@@ -169,12 +169,17 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            // Thử exact match trước
+            // 1. Exact product slug match
             var product = await _productRepository.GetBySlugAsync(fullSlug);
             if (product != null)
                 return Ok(new { product = MapToProductDto(product), variantSlug = (string?)null });
 
-            // Progressive strip từ phải sang trái
+            // 2. Variant slug direct match
+            var productByVariant = await _productRepository.GetByVariantSlugAsync(fullSlug);
+            if (productByVariant != null)
+                return Ok(new { product = MapToProductDto(productByVariant), variantSlug = fullSlug });
+
+            // 3. Progressive strip fallback (legacy slug format)
             var parts = fullSlug.Split('-');
             for (int i = parts.Length - 1; i > 0; i--)
             {

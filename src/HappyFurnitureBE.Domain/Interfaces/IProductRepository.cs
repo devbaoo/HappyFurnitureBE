@@ -5,6 +5,7 @@ namespace HappyFurnitureBE.Domain.Interfaces;
 public interface IProductRepository : IRepository<Product>
 {
     Task<Product?> GetBySlugAsync(string slug);
+    Task<Product?> GetByVariantSlugAsync(string variantSlug);
     Task<IEnumerable<Product>> GetFeaturedProductsAsync();
     Task<IEnumerable<Product>> GetActiveProductsAsync();
     Task<IEnumerable<Product>> GetProductsByCategoryAsync(int categoryId);
