@@ -875,10 +875,9 @@ public class ProductsController : ControllerBase
                 Id = pv.Id,
                 ProductId = pv.ProductId,
                 ColorName = pv.ColorName,
-                Slug = pv.Slug,
-                FullSlug = BuildVariantFullSlug(product.Slug, pv.Slug),
                 ColorNameEn = pv.ColorNameEn,
                 Slug = NormalizeVariantSlugForClient(pv.Slug, product.Slug),
+                FullSlug = BuildVariantFullSlug(product.Slug, pv.Slug),
                 ColorCode = pv.ColorCode,
                 ImageUrl = pv.ImageUrl,
                 IsActive = pv.IsActive,
@@ -914,6 +913,7 @@ public class ProductsController : ControllerBase
             return trimmedVariantSlug;
 
         return productSlug[..lastDash] + "-" + trimmedVariantSlug;
+    }
 
     private static string? ResolveDefaultVariantSlug(string? requestedSlug, string productSlug)
     {

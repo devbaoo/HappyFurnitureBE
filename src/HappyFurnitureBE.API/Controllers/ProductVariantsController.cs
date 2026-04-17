@@ -112,7 +112,6 @@ public class ProductVariantsController : ControllerBase
                 ColorName = request.ColorName,
                 Slug = NormalizeVariantSlug(request.Slug, request.ColorName),
                 ColorNameEn = request.ColorNameEn,
-                Slug = GenerateVariantSlug(product.Slug, request.Slug),
                 ColorCode = request.ColorCode,
                 ImageUrl = request.ImageUrl,
                 IsActive = request.IsActive
@@ -146,7 +145,6 @@ public class ProductVariantsController : ControllerBase
             productVariant.ColorName = request.ColorName;
             productVariant.Slug = NormalizeVariantSlug(request.Slug, request.ColorName);
             productVariant.ColorNameEn = request.ColorNameEn;
-            productVariant.Slug = GenerateVariantSlug(product?.Slug, request.Slug);
             productVariant.ColorCode = request.ColorCode;
             productVariant.ImageUrl = request.ImageUrl;
             productVariant.IsActive = request.IsActive;
@@ -214,11 +212,11 @@ public class ProductVariantsController : ControllerBase
     [HttpPost("with-image")]
     [Authorize(Roles = "admin")]
     [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<ActionResult<ProductVariantDto>> CreateProductVariantWithImage([FromForm] int productId, [FromForm] string? colorName, [FromForm] string? colorNameEn, [FromForm] string? colorCode, [FromForm] string? slugCode = null, [FromForm] IFormFile? image = null)
+    public async Task<ActionResult<ProductVariantDto>> CreateProductVariantWithImage([FromForm] CreateProductVariantWithImageRequest request, [FromForm] IFormFile? image = null)
     {
         try
         {
-            var product = await _productRepository.GetByIdAsync(productId);
+            var product = await _productRepository.GetByIdAsync(request.ProductId);
             if (product == null)
             {
                 return BadRequest(new { message = "Product not found" });
@@ -241,14 +239,13 @@ public class ProductVariantsController : ControllerBase
 
             var productVariant = new ProductVariant
             {
-                ProductId = productId,
-                ColorName = colorName,
-                Slug = NormalizeVariantSlug(slugCode, colorName),
-                ColorNameEn = colorNameEn,
-                Slug = GenerateVariantSlug(product.Slug, slugCode),
-                ColorCode = colorCode,
+                ProductId = request.ProductId,
+                ColorName = request.ColorName,
+                ColorNameEn = request.ColorNameEn,
+                Slug = NormalizeVariantSlug(request.Slug, request.ColorName),
+                ColorCode = request.ColorCode,
                 ImageUrl = imageUrl,
-                IsActive = true,
+                IsActive = request.IsActive,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -529,6 +526,7 @@ public class ProductVariantsController : ControllerBase
             .Replace("đ", "d")
             .Replace("Đ", "d");
 
+        normalized = normalized.Replace("\u0111", "d");
         normalized = normalized.Normalize(NormalizationForm.FormD);
         var sb = new StringBuilder();
         foreach (var c in normalized)
