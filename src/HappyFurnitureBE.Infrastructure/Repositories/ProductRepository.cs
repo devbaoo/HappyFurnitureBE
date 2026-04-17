@@ -25,6 +25,20 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
             .FirstOrDefaultAsync(p => p.Slug == slug);
     }
 
+    public async Task<Product?> GetByVariantSlugAsync(string variantSlug)
+    {
+        return await _dbSet
+            .Include(p => p.ProductCategories)
+                .ThenInclude(pc => pc.Category)
+            .Include(p => p.ProductMaterials)
+                .ThenInclude(pm => pm.Material)
+            .Include(p => p.ProductVariants)
+                .ThenInclude(pv => pv.ProductVariantImages)
+            .Include(p => p.ProductImages)
+            .Include(p => p.Assembly)
+            .FirstOrDefaultAsync(p => p.ProductVariants.Any(v => v.Slug == variantSlug));
+    }
+
     public async Task<IEnumerable<Product>> GetFeaturedProductsAsync()
     {
         return await _dbSet
