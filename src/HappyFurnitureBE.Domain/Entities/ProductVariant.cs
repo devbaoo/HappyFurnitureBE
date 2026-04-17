@@ -10,6 +10,9 @@ public class ProductVariant : BaseEntity
     [MaxLength(100)]
     public string? ColorName { get; set; }
 
+    [MaxLength(100)]
+    public string? ColorNameEn { get; set; }
+
     [MaxLength(150)]
     public string? Slug { get; set; }
 

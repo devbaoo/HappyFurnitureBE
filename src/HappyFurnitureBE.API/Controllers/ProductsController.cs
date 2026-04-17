@@ -8,6 +8,7 @@ using HappyFurnitureBE.Domain.Entities;
 using HappyFurnitureBE.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
 
 namespace HappyFurnitureBE.API.Controllers;
 
@@ -172,12 +173,20 @@ public class ProductsController : ControllerBase
             // 1. Exact product slug match
             var product = await _productRepository.GetBySlugAsync(fullSlug);
             if (product != null)
-                return Ok(new { product = MapToProductDto(product), variantSlug = (string?)null });
+                return Ok(new ResolveSlugResponse
+                {
+                    Product = MapToProductDto(product),
+                    VariantSlug = null
+                });
 
             // 2. Variant slug direct match
             var productByVariant = await _productRepository.GetByVariantSlugAsync(fullSlug);
             if (productByVariant != null)
-                return Ok(new { product = MapToProductDto(productByVariant), variantSlug = fullSlug });
+                return Ok(new ResolveSlugResponse
+                {
+                    Product = MapToProductDto(productByVariant),
+                    VariantSlug = fullSlug
+                });
 
             // 3. Progressive strip fallback (legacy slug format)
             var parts = fullSlug.Split('-');
@@ -187,7 +196,11 @@ public class ProductsController : ControllerBase
                 var candidateVariantSlug = string.Join("-", parts.Skip(i));
                 var candidate = await _productRepository.GetBySlugAsync(candidateSlug);
                 if (candidate != null)
-                    return Ok(new { product = MapToProductDto(candidate), variantSlug = candidateVariantSlug });
+                    return Ok(new ResolveSlugResponse
+                    {
+                        Product = MapToProductDto(candidate),
+                        VariantSlug = candidateVariantSlug
+                    });
             }
 
             return NotFound(new { message = "Product not found" });
@@ -312,6 +325,7 @@ public class ProductsController : ControllerBase
             }
 
             // Add product images if provided
+            string? firstImageUrl = null;
             if (request.ImageUrls.Any())
             {
                 for (int i = 0; i < request.ImageUrls.Count; i++)
@@ -320,13 +334,30 @@ public class ProductsController : ControllerBase
                     {
                         ProductId = createdProduct.Id,
                         ImageUrl = request.ImageUrls[i],
-                        IsPrimary = i == 0, // First image is primary
+                        IsPrimary = i == 0,
                         SortOrder = i + 1
                     };
-                    
+                    if (i == 0) firstImageUrl = request.ImageUrls[i];
                     await _productRepository.AddProductImageAsync(productImage);
                 }
             }
+
+            // Auto-create default variant
+            var defaultVariant = new ProductVariant
+            {
+                ProductId = createdProduct.Id,
+                ColorName = !string.IsNullOrWhiteSpace(request.DefaultVariantColorName)
+                    ? request.DefaultVariantColorName : "Mặc định",
+                ColorNameEn = !string.IsNullOrWhiteSpace(request.DefaultVariantColorNameEn)
+                    ? request.DefaultVariantColorNameEn : "Default",
+                ColorCode = !string.IsNullOrWhiteSpace(request.DefaultVariantColorCode)
+                    ? request.DefaultVariantColorCode : "#FFFFFF",
+                Slug = ResolveDefaultVariantSlug(request.DefaultVariantSlug, createdProduct.Slug),
+                ImageUrl = !string.IsNullOrWhiteSpace(request.DefaultVariantImageUrl)
+                    ? request.DefaultVariantImageUrl : firstImageUrl,
+                IsActive = true
+            };
+            await _productRepository.AddProductVariantAsync(defaultVariant);
 
             var createdProductWithDetails = await _productRepository.GetProductWithDetailsAsync(createdProduct.Id);
             var productDto = MapToProductDto(createdProductWithDetails ?? createdProduct);
@@ -549,7 +580,13 @@ public class ProductsController : ControllerBase
         [FromForm] bool isActive = true,
         [FromForm] int? assemblyId = null,
         [FromForm] string? categoryIds = null,
-        [FromForm] List<IFormFile>? images = null)
+        [FromForm] List<IFormFile>? images = null,
+        [FromForm] string? defaultVariantColorName = "Mặc định",
+        [FromForm] string? defaultVariantColorNameEn = "Default",
+        [FromForm] string? defaultVariantColorCode = "#FFFFFF",
+        [FromForm] string? defaultVariantSlug = null,
+        [FromForm] string? defaultVariantImageUrl = null,
+        [FromForm] IFormFile? defaultVariantImage = null)
     {
         try
         {
@@ -645,6 +682,7 @@ public class ProductsController : ControllerBase
             }
 
             // Add uploaded images
+            string? firstUploadedImageUrl = null;
             if (imageUrls.Any())
             {
                 for (int i = 0; i < imageUrls.Count; i++)
@@ -653,13 +691,45 @@ public class ProductsController : ControllerBase
                     {
                         ProductId = createdProduct.Id,
                         ImageUrl = imageUrls[i],
-                        IsPrimary = i == 0, // First image is primary
+                        IsPrimary = i == 0,
                         SortOrder = i + 1
                     };
-                    
+                    if (i == 0) firstUploadedImageUrl = imageUrls[i];
                     await _productRepository.AddProductImageAsync(productImage);
                 }
             }
+
+            // Upload ảnh riêng cho default variant (nếu có)
+            string? variantImageUrl = null;
+            if (defaultVariantImage != null)
+            {
+                try
+                {
+                    variantImageUrl = await _cloudinaryService.UploadImageAsync(defaultVariantImage, "product-variants");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Could not upload default variant image, fallback to first product image");
+                }
+            }
+
+            // Auto-create default variant
+            var defaultVariant = new ProductVariant
+            {
+                ProductId = createdProduct.Id,
+                ColorName = !string.IsNullOrWhiteSpace(defaultVariantColorName)
+                    ? defaultVariantColorName : "Mặc định",
+                ColorNameEn = !string.IsNullOrWhiteSpace(defaultVariantColorNameEn)
+                    ? defaultVariantColorNameEn : "Default",
+                ColorCode = !string.IsNullOrWhiteSpace(defaultVariantColorCode)
+                    ? defaultVariantColorCode : "#FFFFFF",
+                Slug = ResolveDefaultVariantSlug(defaultVariantSlug, slug),
+                ImageUrl = variantImageUrl
+                    ?? (!string.IsNullOrWhiteSpace(defaultVariantImageUrl) ? defaultVariantImageUrl : null)
+                    ?? firstUploadedImageUrl,
+                IsActive = true
+            };
+            await _productRepository.AddProductVariantAsync(defaultVariant);
 
             var createdProductWithDetails = await _productRepository.GetProductWithDetailsAsync(createdProduct.Id);
             var productDto = MapToProductDto(createdProductWithDetails ?? createdProduct);
@@ -674,6 +744,48 @@ public class ProductsController : ControllerBase
 
     private static ProductDto MapToProductDto(Product product)
     {
+        static List<ProductVariantImageDto> MapVariantImages(ProductVariant pv)
+        {
+            var mapped = pv.ProductVariantImages?.Select(pvi => new ProductVariantImageDto
+            {
+                Id = pvi.Id,
+                VariantId = pvi.VariantId,
+                ImageUrl = pvi.ImageUrl,
+                AltText = pvi.AltText,
+                IsPrimary = pvi.IsPrimary,
+                SortOrder = pvi.SortOrder,
+                CreatedAt = pvi.CreatedAt,
+                UpdatedAt = pvi.UpdatedAt
+            }).ToList() ?? new List<ProductVariantImageDto>();
+
+            if (mapped.Count == 0 && !string.IsNullOrWhiteSpace(pv.ImageUrl))
+            {
+                mapped.Add(new ProductVariantImageDto
+                {
+                    Id = 0,
+                    VariantId = pv.Id,
+                    ImageUrl = pv.ImageUrl,
+                    AltText = pv.ColorName,
+                    IsPrimary = true,
+                    SortOrder = 0,
+                    CreatedAt = pv.CreatedAt,
+                    UpdatedAt = pv.UpdatedAt
+                });
+            }
+
+            return mapped;
+        }
+
+        static string? NormalizeVariantSlugForClient(string? variantSlug, string productSlug)
+        {
+            if (string.IsNullOrWhiteSpace(variantSlug)) return null;
+
+            var normalized = variantSlug.Trim();
+            if (normalized.Equals(productSlug, StringComparison.OrdinalIgnoreCase)) return null;
+            if (normalized.Equals($"{productSlug}-default", StringComparison.OrdinalIgnoreCase)) return null;
+            return normalized;
+        }
+
         return new ProductDto
         {
             Id = product.Id,
@@ -744,23 +856,14 @@ public class ProductsController : ControllerBase
                 Id = pv.Id,
                 ProductId = pv.ProductId,
                 ColorName = pv.ColorName,
-                Slug = pv.Slug,
+                ColorNameEn = pv.ColorNameEn,
+                Slug = NormalizeVariantSlugForClient(pv.Slug, product.Slug),
                 ColorCode = pv.ColorCode,
                 ImageUrl = pv.ImageUrl,
                 IsActive = pv.IsActive,
                 CreatedAt = pv.CreatedAt,
                 UpdatedAt = pv.UpdatedAt,
-                Images = pv.ProductVariantImages?.Select(pvi => new ProductVariantImageDto
-                {
-                    Id = pvi.Id,
-                    VariantId = pvi.VariantId,
-                    ImageUrl = pvi.ImageUrl,
-                    AltText = pvi.AltText,
-                    IsPrimary = pvi.IsPrimary,
-                    SortOrder = pvi.SortOrder,
-                    CreatedAt = pvi.CreatedAt,
-                    UpdatedAt = pvi.UpdatedAt
-                }).ToList() ?? new List<ProductVariantImageDto>()
+                Images = MapVariantImages(pv)
             }).ToList() ?? new List<ProductVariantDto>(),
             Images = product.ProductImages?.Select(pi => new ProductImageDto
             {
@@ -774,5 +877,23 @@ public class ProductsController : ControllerBase
                 UpdatedAt = pi.UpdatedAt
             }).ToList() ?? new List<ProductImageDto>()
         };
+    }
+
+    private static string? ResolveDefaultVariantSlug(string? requestedSlug, string productSlug)
+    {
+        if (string.IsNullOrWhiteSpace(requestedSlug)) return null;
+
+        var normalized = requestedSlug.Trim();
+        if (normalized.Equals(productSlug, StringComparison.OrdinalIgnoreCase)) return null;
+        if (normalized.Equals($"{productSlug}-default", StringComparison.OrdinalIgnoreCase)) return null;
+        return normalized;
+    }
+
+    private sealed class ResolveSlugResponse
+    {
+        public required ProductDto Product { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? VariantSlug { get; set; }
     }
 }
