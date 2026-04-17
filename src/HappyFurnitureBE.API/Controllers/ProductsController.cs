@@ -177,9 +177,27 @@ public class ProductsController : ControllerBase
             // 2. Variant slug direct match
             var productByVariant = await _productRepository.GetByVariantSlugAsync(fullSlug);
             if (productByVariant != null)
-                return Ok(new { product = MapToProductDto(productByVariant), variantSlug = fullSlug });
+            {
+                var matchedVariant = productByVariant.ProductVariants
+                    .FirstOrDefault(variant => string.Equals(variant.Slug, fullSlug, StringComparison.OrdinalIgnoreCase));
+                return Ok(new { product = MapToProductDto(productByVariant), variantSlug = matchedVariant?.Slug });
+            }
 
-            // 3. Progressive strip fallback (legacy slug format)
+            // 3. Full variant route slug match without mutating stored variant slug
+            var products = await _productRepository.GetProductsWithDetailsAsync();
+            var matchedProduct = products.FirstOrDefault(productItem =>
+                productItem.ProductVariants.Any(variant =>
+                    string.Equals(BuildVariantFullSlug(productItem.Slug, variant.Slug), fullSlug, StringComparison.OrdinalIgnoreCase)));
+
+            if (matchedProduct != null)
+            {
+                var matchedVariant = matchedProduct.ProductVariants
+                    .First(variant =>
+                        string.Equals(BuildVariantFullSlug(matchedProduct.Slug, variant.Slug), fullSlug, StringComparison.OrdinalIgnoreCase));
+                return Ok(new { product = MapToProductDto(matchedProduct), variantSlug = matchedVariant.Slug });
+            }
+
+            // 4. Progressive strip fallback (legacy slug format)
             var parts = fullSlug.Split('-');
             for (int i = parts.Length - 1; i > 0; i--)
             {
@@ -745,6 +763,7 @@ public class ProductsController : ControllerBase
                 ProductId = pv.ProductId,
                 ColorName = pv.ColorName,
                 Slug = pv.Slug,
+                FullSlug = BuildVariantFullSlug(product.Slug, pv.Slug),
                 ColorCode = pv.ColorCode,
                 ImageUrl = pv.ImageUrl,
                 IsActive = pv.IsActive,
@@ -774,5 +793,21 @@ public class ProductsController : ControllerBase
                 UpdatedAt = pi.UpdatedAt
             }).ToList() ?? new List<ProductImageDto>()
         };
+    }
+
+    private static string? BuildVariantFullSlug(string? productSlug, string? variantSlug)
+    {
+        if (string.IsNullOrWhiteSpace(variantSlug))
+            return null;
+
+        var trimmedVariantSlug = variantSlug.Trim();
+        if (string.IsNullOrWhiteSpace(productSlug))
+            return trimmedVariantSlug;
+
+        var lastDash = productSlug.LastIndexOf('-');
+        if (lastDash < 0)
+            return trimmedVariantSlug;
+
+        return productSlug[..lastDash] + "-" + trimmedVariantSlug;
     }
 }

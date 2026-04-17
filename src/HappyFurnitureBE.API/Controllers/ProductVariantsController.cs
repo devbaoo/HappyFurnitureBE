@@ -53,7 +53,7 @@ public class ProductVariantsController : ControllerBase
             var pagedVariants = variants
                 .Skip((pagination.PageNumber - 1) * pagination.PageSize)
                 .Take(pagination.PageSize)
-                .Select(MapToProductVariantDto)
+                .Select(variant => MapToProductVariantDto(variant, product.Slug))
                 .ToList();
 
             var result = new PagedResult<ProductVariantDto>
@@ -84,7 +84,8 @@ public class ProductVariantsController : ControllerBase
                 return NotFound(new { message = "Product variant not found" });
             }
             
-            return Ok(MapToProductVariantDto(variant));
+            var product = await _productRepository.GetByIdAsync(variant.ProductId);
+            return Ok(MapToProductVariantDto(variant, product?.Slug));
         }
         catch (Exception ex)
         {
@@ -109,14 +110,14 @@ public class ProductVariantsController : ControllerBase
             {
                 ProductId = request.ProductId,
                 ColorName = request.ColorName,
-                Slug = GenerateVariantSlug(product.Slug, request.Slug),
+                Slug = NormalizeVariantSlug(request.Slug, request.ColorName),
                 ColorCode = request.ColorCode,
                 ImageUrl = request.ImageUrl,
                 IsActive = request.IsActive
             };
 
             var createdVariant = await _productRepository.AddProductVariantAsync(productVariant);
-            var variantDto = MapToProductVariantDto(createdVariant);
+            var variantDto = MapToProductVariantDto(createdVariant, product.Slug);
 
             return CreatedAtAction(nameof(GetProductVariant), new { id = createdVariant.Id }, variantDto);
         }
@@ -141,13 +142,13 @@ public class ProductVariantsController : ControllerBase
 
             var product = await _productRepository.GetByIdAsync(productVariant.ProductId);
             productVariant.ColorName = request.ColorName;
-            productVariant.Slug = GenerateVariantSlug(product?.Slug, request.Slug);
+            productVariant.Slug = NormalizeVariantSlug(request.Slug, request.ColorName);
             productVariant.ColorCode = request.ColorCode;
             productVariant.ImageUrl = request.ImageUrl;
             productVariant.IsActive = request.IsActive;
 
             await _productRepository.UpdateProductVariantAsync(productVariant);
-            var variantDto = MapToProductVariantDto(productVariant);
+            var variantDto = MapToProductVariantDto(productVariant, product?.Slug);
             
             return Ok(variantDto);
         }
@@ -192,7 +193,7 @@ public class ProductVariantsController : ControllerBase
             }
 
             var variants = await _productRepository.GetActiveProductVariantsAsync(productId);
-            var variantDtos = variants.Select(MapToProductVariantDto);
+            var variantDtos = variants.Select(variant => MapToProductVariantDto(variant, product.Slug));
             
             return Ok(variantDtos);
         }
@@ -238,7 +239,7 @@ public class ProductVariantsController : ControllerBase
             {
                 ProductId = productId,
                 ColorName = colorName,
-                Slug = GenerateVariantSlug(product.Slug, slugCode),
+                Slug = NormalizeVariantSlug(slugCode, colorName),
                 ColorCode = colorCode,
                 ImageUrl = imageUrl,
                 IsActive = true,
@@ -246,7 +247,7 @@ public class ProductVariantsController : ControllerBase
             };
 
             var createdVariant = await _productRepository.AddProductVariantAsync(productVariant);
-            var variantDto = MapToProductVariantDto(createdVariant);
+            var variantDto = MapToProductVariantDto(createdVariant, product.Slug);
             
             return CreatedAtAction(nameof(GetProductVariant), new { id = createdVariant.Id }, variantDto);
         }
@@ -451,7 +452,7 @@ public class ProductVariantsController : ControllerBase
     // Mapping helpers
     // ═══════════════════════════════════════════════════════════════════════════
 
-    private static ProductVariantDto MapToProductVariantDto(ProductVariant productVariant)
+    private static ProductVariantDto MapToProductVariantDto(ProductVariant productVariant, string? productSlug = null)
     {
         return new ProductVariantDto
         {
@@ -459,6 +460,7 @@ public class ProductVariantsController : ControllerBase
             ProductId = productVariant.ProductId,
             ColorName = productVariant.ColorName,
             Slug = productVariant.Slug,
+            FullSlug = BuildVariantFullSlug(productSlug, productVariant.Slug),
             ColorCode = productVariant.ColorCode,
             ImageUrl = productVariant.ImageUrl,
             IsActive = productVariant.IsActive,
@@ -469,17 +471,29 @@ public class ProductVariantsController : ControllerBase
         };
     }
 
-    private static string GenerateVariantSlug(string? productSlug, string? variantCode)
+    private static string? NormalizeVariantSlug(string? variantSlug, string? colorName = null)
     {
-        if (string.IsNullOrWhiteSpace(variantCode)) return "";
-        var code = variantCode.Trim();
-        if (!string.IsNullOrWhiteSpace(productSlug))
-        {
-            var lastDash = productSlug.LastIndexOf('-');
-            if (lastDash >= 0)
-                return productSlug[..lastDash] + "-" + code;
-        }
-        return code;
+        if (!string.IsNullOrWhiteSpace(variantSlug))
+            return variantSlug.Trim();
+
+        var generated = GenerateSlug(colorName);
+        return string.IsNullOrWhiteSpace(generated) ? null : generated;
+    }
+
+    private static string? BuildVariantFullSlug(string? productSlug, string? variantSlug)
+    {
+        if (string.IsNullOrWhiteSpace(variantSlug))
+            return null;
+
+        var trimmedVariantSlug = variantSlug.Trim();
+        if (string.IsNullOrWhiteSpace(productSlug))
+            return trimmedVariantSlug;
+
+        var lastDash = productSlug.LastIndexOf('-');
+        if (lastDash < 0)
+            return trimmedVariantSlug;
+
+        return productSlug[..lastDash] + "-" + trimmedVariantSlug;
     }
 
     private static string GenerateSlug(string? value)

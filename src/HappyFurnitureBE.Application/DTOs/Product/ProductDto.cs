@@ -271,6 +271,7 @@ public class ProductVariantDto
     public int ProductId { get; set; }
     public string? ColorName { get; set; }
     public string? Slug { get; set; }
+    public string? FullSlug { get; set; }
     public string? ColorCode { get; set; }
     public string? ImageUrl { get; set; }
     public bool IsActive { get; set; }
