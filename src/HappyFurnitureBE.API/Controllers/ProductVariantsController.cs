@@ -109,7 +109,7 @@ public class ProductVariantsController : ControllerBase
             {
                 ProductId = request.ProductId,
                 ColorName = request.ColorName,
-                Slug = GenerateSlug(request.Slug ?? request.ColorName),
+                Slug = GenerateVariantSlug(product.Slug, request.Slug),
                 ColorCode = request.ColorCode,
                 ImageUrl = request.ImageUrl,
                 IsActive = request.IsActive
@@ -139,8 +139,9 @@ public class ProductVariantsController : ControllerBase
                 return NotFound(new { message = "Product variant not found" });
             }
 
+            var product = await _productRepository.GetByIdAsync(productVariant.ProductId);
             productVariant.ColorName = request.ColorName;
-            productVariant.Slug = GenerateSlug(request.Slug ?? request.ColorName);
+            productVariant.Slug = GenerateVariantSlug(product?.Slug, request.Slug);
             productVariant.ColorCode = request.ColorCode;
             productVariant.ImageUrl = request.ImageUrl;
             productVariant.IsActive = request.IsActive;
@@ -208,7 +209,7 @@ public class ProductVariantsController : ControllerBase
     [HttpPost("with-image")]
     [Authorize(Roles = "admin")]
     [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<ActionResult<ProductVariantDto>> CreateProductVariantWithImage([FromForm] int productId, [FromForm] string? colorName, [FromForm] string? colorCode, [FromForm] IFormFile? image = null)
+    public async Task<ActionResult<ProductVariantDto>> CreateProductVariantWithImage([FromForm] int productId, [FromForm] string? colorName, [FromForm] string? colorCode, [FromForm] string? slugCode = null, [FromForm] IFormFile? image = null)
     {
         try
         {
@@ -237,7 +238,7 @@ public class ProductVariantsController : ControllerBase
             {
                 ProductId = productId,
                 ColorName = colorName,
-                Slug = GenerateSlug(colorName),
+                Slug = GenerateVariantSlug(product.Slug, slugCode),
                 ColorCode = colorCode,
                 ImageUrl = imageUrl,
                 IsActive = true,
@@ -466,6 +467,19 @@ public class ProductVariantsController : ControllerBase
             Images = productVariant.ProductVariantImages?.Select(MapToVariantImageDto).ToList()
                 ?? new List<ProductVariantImageDto>()
         };
+    }
+
+    private static string GenerateVariantSlug(string? productSlug, string? variantCode)
+    {
+        if (string.IsNullOrWhiteSpace(variantCode)) return "";
+        var code = variantCode.Trim();
+        if (!string.IsNullOrWhiteSpace(productSlug))
+        {
+            var lastDash = productSlug.LastIndexOf('-');
+            if (lastDash >= 0)
+                return productSlug[..lastDash] + "-" + code;
+        }
+        return code;
     }
 
     private static string GenerateSlug(string? value)
