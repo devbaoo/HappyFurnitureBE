@@ -268,7 +268,9 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
 
     public async Task<ProductVariant?> GetProductVariantByIdAsync(int id)
     {
-        return await _context.ProductVariants.FirstOrDefaultAsync(pv => pv.Id == id);
+        return await _context.ProductVariants
+            .Include(pv => pv.ProductVariantImages)
+            .FirstOrDefaultAsync(pv => pv.Id == id);
     }
 
     public async Task<ProductVariant> AddProductVariantAsync(ProductVariant productVariant)
@@ -298,6 +300,7 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
     {
         return await _context.ProductVariants
             .Where(pv => pv.ProductId == productId && pv.IsActive)
+            .Include(pv => pv.ProductVariantImages)
             .ToListAsync();
     }
 

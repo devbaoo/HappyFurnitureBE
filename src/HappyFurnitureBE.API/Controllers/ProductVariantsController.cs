@@ -111,6 +111,8 @@ public class ProductVariantsController : ControllerBase
                 ProductId = request.ProductId,
                 ColorName = request.ColorName,
                 Slug = NormalizeVariantSlug(request.Slug, request.ColorName),
+                ColorNameEn = request.ColorNameEn,
+                Slug = GenerateVariantSlug(product.Slug, request.Slug),
                 ColorCode = request.ColorCode,
                 ImageUrl = request.ImageUrl,
                 IsActive = request.IsActive
@@ -143,6 +145,8 @@ public class ProductVariantsController : ControllerBase
             var product = await _productRepository.GetByIdAsync(productVariant.ProductId);
             productVariant.ColorName = request.ColorName;
             productVariant.Slug = NormalizeVariantSlug(request.Slug, request.ColorName);
+            productVariant.ColorNameEn = request.ColorNameEn;
+            productVariant.Slug = GenerateVariantSlug(product?.Slug, request.Slug);
             productVariant.ColorCode = request.ColorCode;
             productVariant.ImageUrl = request.ImageUrl;
             productVariant.IsActive = request.IsActive;
@@ -210,7 +214,7 @@ public class ProductVariantsController : ControllerBase
     [HttpPost("with-image")]
     [Authorize(Roles = "admin")]
     [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<ActionResult<ProductVariantDto>> CreateProductVariantWithImage([FromForm] int productId, [FromForm] string? colorName, [FromForm] string? colorCode, [FromForm] string? slugCode = null, [FromForm] IFormFile? image = null)
+    public async Task<ActionResult<ProductVariantDto>> CreateProductVariantWithImage([FromForm] int productId, [FromForm] string? colorName, [FromForm] string? colorNameEn, [FromForm] string? colorCode, [FromForm] string? slugCode = null, [FromForm] IFormFile? image = null)
     {
         try
         {
@@ -240,6 +244,8 @@ public class ProductVariantsController : ControllerBase
                 ProductId = productId,
                 ColorName = colorName,
                 Slug = NormalizeVariantSlug(slugCode, colorName),
+                ColorNameEn = colorNameEn,
+                Slug = GenerateVariantSlug(product.Slug, slugCode),
                 ColorCode = colorCode,
                 ImageUrl = imageUrl,
                 IsActive = true,
@@ -454,11 +460,30 @@ public class ProductVariantsController : ControllerBase
 
     private static ProductVariantDto MapToProductVariantDto(ProductVariant productVariant, string? productSlug = null)
     {
+        var mappedImages = productVariant.ProductVariantImages?.Select(MapToVariantImageDto).ToList()
+            ?? new List<ProductVariantImageDto>();
+
+        if (mappedImages.Count == 0 && !string.IsNullOrWhiteSpace(productVariant.ImageUrl))
+        {
+            mappedImages.Add(new ProductVariantImageDto
+            {
+                Id = 0,
+                VariantId = productVariant.Id,
+                ImageUrl = productVariant.ImageUrl,
+                AltText = productVariant.ColorName,
+                IsPrimary = true,
+                SortOrder = 0,
+                CreatedAt = productVariant.CreatedAt,
+                UpdatedAt = productVariant.UpdatedAt
+            });
+        }
+
         return new ProductVariantDto
         {
             Id = productVariant.Id,
             ProductId = productVariant.ProductId,
             ColorName = productVariant.ColorName,
+            ColorNameEn = productVariant.ColorNameEn,
             Slug = productVariant.Slug,
             FullSlug = BuildVariantFullSlug(productSlug, productVariant.Slug),
             ColorCode = productVariant.ColorCode,
@@ -466,8 +491,7 @@ public class ProductVariantsController : ControllerBase
             IsActive = productVariant.IsActive,
             CreatedAt = productVariant.CreatedAt,
             UpdatedAt = productVariant.UpdatedAt,
-            Images = productVariant.ProductVariantImages?.Select(MapToVariantImageDto).ToList()
-                ?? new List<ProductVariantImageDto>()
+            Images = mappedImages
         };
     }
 
