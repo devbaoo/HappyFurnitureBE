@@ -304,6 +304,7 @@ public class ProductVariantDto
     public string? ColorName { get; set; }
     public string? ColorNameEn { get; set; }
     public string? Slug { get; set; }
+    public string? FullSlug { get; set; }
     public string? ColorCode { get; set; }
     public string? ImageUrl { get; set; }
     public bool IsActive { get; set; }
