@@ -24,6 +24,8 @@ public class ProductVariant : BaseEntity
 
     public bool IsActive { get; set; } = true;
 
+    public bool IsDefault { get; set; } = false;
+
     // Navigation properties
     public Product Product { get; set; } = null!;
     public ICollection<ProductVariantImage> ProductVariantImages { get; set; } = new List<ProductVariantImage>();
