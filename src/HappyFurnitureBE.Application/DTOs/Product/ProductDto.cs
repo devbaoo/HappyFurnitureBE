@@ -308,6 +308,7 @@ public class ProductVariantDto
     public string? ColorCode { get; set; }
     public string? ImageUrl { get; set; }
     public bool IsActive { get; set; }
+    public bool IsDefault { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public List<ProductVariantImageDto> Images { get; set; } = new();

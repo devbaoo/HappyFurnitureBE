@@ -371,12 +371,28 @@ public class ProductsController : ControllerBase
                     ? request.DefaultVariantColorNameEn : "Default",
                 ColorCode = !string.IsNullOrWhiteSpace(request.DefaultVariantColorCode)
                     ? request.DefaultVariantColorCode : "#FFFFFF",
-                Slug = ResolveDefaultVariantSlug(request.DefaultVariantSlug, createdProduct.Slug),
+                Slug = null,
                 ImageUrl = !string.IsNullOrWhiteSpace(request.DefaultVariantImageUrl)
                     ? request.DefaultVariantImageUrl : firstImageUrl,
-                IsActive = true
+                IsActive = true,
+                IsDefault = true
             };
             await _productRepository.AddProductVariantAsync(defaultVariant);
+
+            // Copy product images → default variant images
+            if (request.ImageUrls != null)
+            {
+                for (int i = 0; i < request.ImageUrls.Count; i++)
+                {
+                    await _productRepository.AddProductVariantImageAsync(new ProductVariantImage
+                    {
+                        VariantId = defaultVariant.Id,
+                        ImageUrl = request.ImageUrls[i],
+                        IsPrimary = i == 0,
+                        SortOrder = i + 1
+                    });
+                }
+            }
 
             var createdProductWithDetails = await _productRepository.GetProductWithDetailsAsync(createdProduct.Id);
             var productDto = MapToProductDto(createdProductWithDetails ?? createdProduct);
@@ -603,7 +619,6 @@ public class ProductsController : ControllerBase
         [FromForm] string? defaultVariantColorName = "Mặc định",
         [FromForm] string? defaultVariantColorNameEn = "Default",
         [FromForm] string? defaultVariantColorCode = "#FFFFFF",
-        [FromForm] string? defaultVariantSlug = null,
         [FromForm] string? defaultVariantImageUrl = null,
         [FromForm] IFormFile? defaultVariantImage = null)
     {
@@ -742,13 +757,29 @@ public class ProductsController : ControllerBase
                     ? defaultVariantColorNameEn : "Default",
                 ColorCode = !string.IsNullOrWhiteSpace(defaultVariantColorCode)
                     ? defaultVariantColorCode : "#FFFFFF",
-                Slug = ResolveDefaultVariantSlug(defaultVariantSlug, slug),
+                Slug = null,
                 ImageUrl = variantImageUrl
                     ?? (!string.IsNullOrWhiteSpace(defaultVariantImageUrl) ? defaultVariantImageUrl : null)
                     ?? firstUploadedImageUrl,
-                IsActive = true
+                IsActive = true,
+                IsDefault = true
             };
             await _productRepository.AddProductVariantAsync(defaultVariant);
+
+            // Copy product images → default variant images
+            if (imageUrls.Count > 0)
+            {
+                for (int i = 0; i < imageUrls.Count; i++)
+                {
+                    await _productRepository.AddProductVariantImageAsync(new ProductVariantImage
+                    {
+                        VariantId = defaultVariant.Id,
+                        ImageUrl = imageUrls[i],
+                        IsPrimary = i == 0,
+                        SortOrder = i + 1
+                    });
+                }
+            }
 
             var createdProductWithDetails = await _productRepository.GetProductWithDetailsAsync(createdProduct.Id);
             var productDto = MapToProductDto(createdProductWithDetails ?? createdProduct);
@@ -876,11 +907,12 @@ public class ProductsController : ControllerBase
                 ProductId = pv.ProductId,
                 ColorName = pv.ColorName,
                 ColorNameEn = pv.ColorNameEn,
-                Slug = NormalizeVariantSlugForClient(pv.Slug, product.Slug),
-                FullSlug = BuildVariantFullSlug(product.Slug, pv.Slug),
+                Slug = pv.IsDefault ? null : NormalizeVariantSlugForClient(pv.Slug, product.Slug),
+                FullSlug = pv.IsDefault ? product.Slug : BuildVariantFullSlug(product.Slug, pv.Slug),
                 ColorCode = pv.ColorCode,
                 ImageUrl = pv.ImageUrl,
                 IsActive = pv.IsActive,
+                IsDefault = pv.IsDefault,
                 CreatedAt = pv.CreatedAt,
                 UpdatedAt = pv.UpdatedAt,
                 Images = MapVariantImages(pv)
@@ -915,15 +947,6 @@ public class ProductsController : ControllerBase
         return productSlug[..lastDash] + "-" + trimmedVariantSlug;
     }
 
-    private static string? ResolveDefaultVariantSlug(string? requestedSlug, string productSlug)
-    {
-        if (string.IsNullOrWhiteSpace(requestedSlug)) return null;
-
-        var normalized = requestedSlug.Trim();
-        if (normalized.Equals(productSlug, StringComparison.OrdinalIgnoreCase)) return null;
-        if (normalized.Equals($"{productSlug}-default", StringComparison.OrdinalIgnoreCase)) return null;
-        return normalized;
-    }
 
     private sealed class ResolveSlugResponse
     {

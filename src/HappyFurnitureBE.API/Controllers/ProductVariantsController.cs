@@ -143,7 +143,9 @@ public class ProductVariantsController : ControllerBase
 
             var product = await _productRepository.GetByIdAsync(productVariant.ProductId);
             productVariant.ColorName = request.ColorName;
-            productVariant.Slug = NormalizeVariantSlug(request.Slug, request.ColorName);
+            productVariant.Slug = string.IsNullOrWhiteSpace(request.Slug)
+                ? productVariant.Slug
+                : NormalizeVariantSlug(request.Slug, null);
             productVariant.ColorNameEn = request.ColorNameEn;
             productVariant.ColorCode = request.ColorCode;
             productVariant.ImageUrl = request.ImageUrl;
@@ -377,6 +379,61 @@ public class ProductVariantsController : ControllerBase
         }
     }
 
+    /// <summary>Cập nhật ảnh biến thể bằng file upload (multipart)</summary>
+    [HttpPut("images/{imageId}/with-image")]
+    [Authorize(Roles = "admin")]
+    [ApiExplorerSettings(IgnoreApi = true)]
+    public async Task<ActionResult<ProductVariantImageDto>> UpdateVariantImageWithUpload(
+        int imageId,
+        [FromForm] IFormFile? image = null,
+        [FromForm] string? imageUrl = null,
+        [FromForm] bool isPrimary = false,
+        [FromForm] int sortOrder = 1,
+        [FromForm] string? altText = null)
+    {
+        try
+        {
+            var existingImage = await _productRepository.GetProductVariantImageByIdAsync(imageId);
+            if (existingImage == null)
+                return NotFound(new { message = "Variant image not found" });
+
+            if (isPrimary && !existingImage.IsPrimary)
+            {
+                await _productRepository.UnsetPrimaryVariantImagesAsync(existingImage.VariantId);
+            }
+
+            // Upload new image to Cloudinary if provided; otherwise use imageUrl from form
+            if (image != null && image.Length > 0)
+            {
+                try
+                {
+                    existingImage.ImageUrl = await _cloudinaryService.UploadImageAsync(image, "product-variant-images");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error uploading variant image to Cloudinary for update");
+                    return BadRequest(new { message = "Error uploading image: " + ex.Message });
+                }
+            }
+            else if (!string.IsNullOrWhiteSpace(imageUrl))
+            {
+                existingImage.ImageUrl = imageUrl;
+            }
+
+            existingImage.AltText = altText;
+            existingImage.IsPrimary = isPrimary;
+            existingImage.SortOrder = sortOrder;
+
+            await _productRepository.UpdateProductVariantImageAsync(existingImage);
+            return Ok(MapToVariantImageDto(existingImage));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating variant image with upload {ImageId}", imageId);
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
+
     /// <summary>Cập nhật ảnh biến thể</summary>
     [HttpPut("images/{imageId}")]
     [Authorize(Roles = "admin")]
@@ -482,10 +539,11 @@ public class ProductVariantsController : ControllerBase
             ColorName = productVariant.ColorName,
             ColorNameEn = productVariant.ColorNameEn,
             Slug = productVariant.Slug,
-            FullSlug = BuildVariantFullSlug(productSlug, productVariant.Slug),
+            FullSlug = productVariant.IsDefault ? productSlug : BuildVariantFullSlug(productSlug, productVariant.Slug),
             ColorCode = productVariant.ColorCode,
             ImageUrl = productVariant.ImageUrl,
             IsActive = productVariant.IsActive,
+            IsDefault = productVariant.IsDefault,
             CreatedAt = productVariant.CreatedAt,
             UpdatedAt = productVariant.UpdatedAt,
             Images = mappedImages
@@ -494,11 +552,14 @@ public class ProductVariantsController : ControllerBase
 
     private static string? NormalizeVariantSlug(string? variantSlug, string? colorName = null)
     {
-        if (!string.IsNullOrWhiteSpace(variantSlug))
-            return variantSlug.Trim();
-
-        var generated = GenerateSlug(colorName);
-        return string.IsNullOrWhiteSpace(generated) ? null : generated;
+        var trimmed = variantSlug?.Trim();
+        // Always auto-generate from colorName when slug is empty/missing
+        if (string.IsNullOrWhiteSpace(trimmed))
+        {
+            var generated = GenerateSlug(colorName);
+            return string.IsNullOrWhiteSpace(generated) ? null : generated;
+        }
+        return trimmed;
     }
 
     private static string? BuildVariantFullSlug(string? productSlug, string? variantSlug)

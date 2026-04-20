@@ -74,14 +74,16 @@ public class MultipartEndpointsDocumentFilter : IDocumentFilter
             {
                 [OperationType.Post] = CreateMultipartOp(
                     "Tạo product variant với ảnh (multipart)",
-                    "Fields: productId (required), colorName, colorCode, price, image (optional)",
+                    "Fields: productId (required), colorName, colorNameEn, slug, colorCode, isActive, image (optional)",
                     "ProductVariants",
                     new Dictionary<string, OpenApiSchema>
                     {
                         ["productId"] = new() { Type = "integer", Description = "ID product" },
                         ["colorName"] = new() { Type = "string", Nullable = true, Description = "Tên màu" },
+                        ["colorNameEn"] = new() { Type = "string", Nullable = true, Description = "Tên màu (tiếng Anh)" },
+                        ["slug"] = new() { Type = "string", Nullable = true, Description = "Slug (tự động tạo từ colorName nếu để trống)" },
                         ["colorCode"] = new() { Type = "string", Nullable = true, Description = "Mã màu (#hex)" },
-                        ["price"] = new() { Type = "number", Format = "decimal", Nullable = true, Description = "Giá variant" },
+                        ["isActive"] = new() { Type = "boolean", Nullable = true, Description = "Trạng thái active (mặc định: true)" },
                         ["image"] = new() { Type = "string", Format = "binary", Nullable = true, Description = "File ảnh variant" }
                     },
                     required: new[] { "productId" })
