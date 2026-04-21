@@ -615,6 +615,7 @@ public class ProductsController : ControllerBase
         [FromForm] bool isActive = true,
         [FromForm] int? assemblyId = null,
         [FromForm] string? categoryIds = null,
+        [FromForm] string? materialIds = null,
         [FromForm] List<IFormFile>? images = null,
         [FromForm] string? defaultVariantColorName = "Mặc định",
         [FromForm] string? defaultVariantColorNameEn = "Default",
@@ -658,7 +659,29 @@ public class ProductsController : ControllerBase
 
             // Parse material IDs from string (comma-separated) if provided
             var materialIdList = new List<int>();
-            // Note: materialIds parameter would need to be added to the method signature if needed
+            if (!string.IsNullOrEmpty(materialIds))
+            {
+                try
+                {
+                    materialIdList = materialIds.Split(',')
+                        .Select(id => int.Parse(id.Trim()))
+                        .ToList();
+                }
+                catch (FormatException)
+                {
+                    return BadRequest(new { message = "Invalid material IDs format. Use comma-separated integers." });
+                }
+            }
+
+            // Validate materials exist
+            foreach (var materialId in materialIdList)
+            {
+                var material = await _materialRepository.GetByIdAsync(materialId);
+                if (material == null)
+                {
+                    return BadRequest(new { message = $"Material with ID {materialId} not found" });
+                }
+            }
 
             // Upload images to Cloudinary if provided
             var imageUrls = new List<string>();
@@ -711,6 +734,19 @@ public class ProductsController : ControllerBase
                     {
                         ProductId = createdProduct.Id,
                         CategoryId = categoryId
+                    });
+                }
+            }
+
+            // Add product materials
+            if (materialIdList.Any())
+            {
+                foreach (var materialId in materialIdList)
+                {
+                    await _productRepository.AddProductMaterialAsync(new ProductMaterial
+                    {
+                        ProductId = createdProduct.Id,
+                        MaterialId = materialId
                     });
                 }
             }
