@@ -129,6 +129,45 @@ public class ProductVariantsController : ControllerBase
         }
     }
 
+    [HttpPost("bulk")]
+    [Authorize(Roles = "admin")]
+    public async Task<ActionResult<List<ProductVariantDto>>> BulkCreateProductVariants([FromBody] BulkCreateProductVariantsRequest request)
+    {
+        try
+        {
+            var product = await _productRepository.GetByIdAsync(request.ProductId);
+            if (product == null)
+                return BadRequest(new { message = "Product not found" });
+
+            if (request.Variants == null || request.Variants.Count == 0)
+                return BadRequest(new { message = "No variants provided" });
+
+            var results = new List<ProductVariantDto>();
+            foreach (var item in request.Variants)
+            {
+                var productVariant = new ProductVariant
+                {
+                    ProductId = request.ProductId,
+                    ColorName = item.ColorName,
+                    Slug = NormalizeVariantSlug(item.Slug, item.ColorName),
+                    ColorNameEn = item.ColorNameEn,
+                    ColorCode = item.ColorCode,
+                    ImageUrl = item.ImageUrl,
+                    IsActive = item.IsActive
+                };
+                var created = await _productRepository.AddProductVariantAsync(productVariant);
+                results.Add(MapToProductVariantDto(created, product.Slug));
+            }
+
+            return Ok(results);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error bulk creating variants for product {ProductId}", request.ProductId);
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
+
     [HttpPut("{id}")]
     [Authorize(Roles = "admin")]
     public async Task<ActionResult<ProductVariantDto>> UpdateProductVariant(int id, [FromBody] UpdateProductVariantRequest request)
