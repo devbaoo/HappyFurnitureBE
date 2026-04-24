@@ -358,6 +358,26 @@ public class CreateProductVariantWithImageRequest
     public bool IsActive { get; set; } = true;
 }
 
+public class BulkVariantItem
+{
+    [MaxLength(100)] public string? ColorName { get; set; }
+    [MaxLength(100)] public string? ColorNameEn { get; set; }
+    [MaxLength(150)] public string? Slug { get; set; }
+    [MaxLength(7)] public string? ColorCode { get; set; }
+    [MaxLength(500)] public string? ImageUrl { get; set; }
+    public bool IsActive { get; set; } = true;
+}
+
+public class BulkCreateProductVariantsRequest
+{
+    [Required(ErrorMessage = "Product ID is required")]
+    public int ProductId { get; set; }
+
+    [Required(ErrorMessage = "Variants list is required")]
+    [MinLength(1, ErrorMessage = "At least one variant is required")]
+    public List<BulkVariantItem> Variants { get; set; } = new();
+}
+
 public class UpdateProductVariantRequest
 {
     [MaxLength(100, ErrorMessage = "Color name cannot exceed 100 characters")]
