@@ -571,11 +571,13 @@ public class ProductVariantsController : ControllerBase
         if (string.IsNullOrWhiteSpace(productSlug))
             return trimmedVariantSlug;
 
-        var lastDash = productSlug.LastIndexOf('-');
-        if (lastDash < 0)
+        var productParts = productSlug.Split('-');
+        var variantPartCount = trimmedVariantSlug.Split('-').Length;
+        if (variantPartCount >= productParts.Length)
             return trimmedVariantSlug;
 
-        return productSlug[..lastDash] + "-" + trimmedVariantSlug;
+        var baseParts = productParts[..^variantPartCount];
+        return string.Join("-", baseParts) + "-" + trimmedVariantSlug;
     }
 
     private static string GenerateSlug(string? value)
