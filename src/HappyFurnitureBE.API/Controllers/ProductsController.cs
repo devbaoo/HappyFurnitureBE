@@ -201,11 +201,6 @@ public class ProductsController : ControllerBase
                         string.Equals(BuildVariantFullSlug(matchedProduct.Slug, variant.Slug), fullSlug, StringComparison.OrdinalIgnoreCase));
                 return Ok(new { product = MapToProductDto(matchedProduct), variantSlug = matchedVariant.Slug });
             }
-                return Ok(new ResolveSlugResponse
-                {
-                    Product = MapToProductDto(productByVariant),
-                    VariantSlug = fullSlug
-                });
 
             // 4. Progressive strip fallback (legacy slug format)
             var parts = fullSlug.Split('-');
@@ -976,11 +971,13 @@ public class ProductsController : ControllerBase
         if (string.IsNullOrWhiteSpace(productSlug))
             return trimmedVariantSlug;
 
-        var lastDash = productSlug.LastIndexOf('-');
-        if (lastDash < 0)
+        var productParts = productSlug.Split('-');
+        var variantPartCount = trimmedVariantSlug.Split('-').Length;
+        if (variantPartCount >= productParts.Length)
             return trimmedVariantSlug;
 
-        return productSlug[..lastDash] + "-" + trimmedVariantSlug;
+        var baseParts = productParts[..^variantPartCount];
+        return string.Join("-", baseParts) + "-" + trimmedVariantSlug;
     }
 
 
