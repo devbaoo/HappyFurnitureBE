@@ -541,7 +541,7 @@ public class ProductVariantsController : ControllerBase
             if (request.Images == null || request.Images.Count == 0)
                 return BadRequest(new { message = "No images provided" });
 
-            var existingImages = await _productRepository.GetVariantImagesAsync(variantId);
+            var existingImages = (await _productRepository.GetVariantImagesAsync(variantId)).ToList();
             var nextSortOrder = existingImages.Count > 0 ? existingImages.Max(i => i.SortOrder) + 1 : 1;
             var isFirstBatch = existingImages.Count == 0;
 
