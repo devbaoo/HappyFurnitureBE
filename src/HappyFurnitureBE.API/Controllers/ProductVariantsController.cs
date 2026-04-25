@@ -526,6 +526,53 @@ public class ProductVariantsController : ControllerBase
         }
     }
 
+    /// <summary>Thêm nhiều ảnh cho biến thể cùng lúc (bulk)</summary>
+    [HttpPost("{variantId}/images/bulk")]
+    [Authorize(Roles = "admin")]
+    public async Task<ActionResult<List<ProductVariantImageDto>>> BulkCreateVariantImages(
+        int variantId, [FromBody] BulkCreateVariantImagesRequest request)
+    {
+        try
+        {
+            var variant = await _productRepository.GetProductVariantByIdAsync(variantId);
+            if (variant == null)
+                return BadRequest(new { message = "Product variant not found" });
+
+            if (request.Images == null || request.Images.Count == 0)
+                return BadRequest(new { message = "No images provided" });
+
+            var existingImages = await _productRepository.GetVariantImagesAsync(variantId);
+            var nextSortOrder = existingImages.Count > 0 ? existingImages.Max(i => i.SortOrder) + 1 : 1;
+            var isFirstBatch = existingImages.Count == 0;
+
+            var created = new List<ProductVariantImageDto>();
+            for (var i = 0; i < request.Images.Count; i++)
+            {
+                var item = request.Images[i];
+                var isPrimary = isFirstBatch && i == 0;
+
+                var image = new ProductVariantImage
+                {
+                    VariantId = variantId,
+                    ImageUrl = item.ImageUrl,
+                    AltText = item.AltText,
+                    IsPrimary = isPrimary,
+                    SortOrder = nextSortOrder + i
+                };
+
+                var saved = await _productRepository.AddProductVariantImageAsync(image);
+                created.Add(MapToVariantImageDto(saved));
+            }
+
+            return Ok(created);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error bulk creating variant images for variant {VariantId}", variantId);
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
+
     /// <summary>Đặt ảnh chính cho biến thể</summary>
     [HttpPost("images/{imageId}/set-primary")]
     [Authorize(Roles = "admin")]

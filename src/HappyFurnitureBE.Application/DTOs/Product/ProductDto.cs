@@ -442,3 +442,19 @@ public class UpdateProductVariantImageRequest
 
     public int SortOrder { get; set; }
 }
+
+public class BulkCreateVariantImageItem
+{
+    [Required(ErrorMessage = "Image URL is required")]
+    [MaxLength(500, ErrorMessage = "Image URL cannot exceed 500 characters")]
+    public string ImageUrl { get; set; } = string.Empty;
+
+    [MaxLength(255, ErrorMessage = "Alt text cannot exceed 255 characters")]
+    public string? AltText { get; set; }
+}
+
+public class BulkCreateVariantImagesRequest
+{
+    [Required]
+    public List<BulkCreateVariantImageItem> Images { get; set; } = new();
+}
