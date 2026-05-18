@@ -51,6 +51,13 @@ public class ContentBlockDto
     public bool IsFullWidth { get; set; }
     /// <summary>Bố cục ảnh: full | left | right</summary>
     public string? ImagePosition { get; set; }
+    public string? Title2Vi { get; set; }
+    public string? Title2En { get; set; }
+    public string? Content2Vi { get; set; }
+    public string? Content2En { get; set; }
+    public string? Image2Url { get; set; }
+    public string? Image2AltVi { get; set; }
+    public string? Image2AltEn { get; set; }
 }
 
 public class NewsDetailDto
@@ -139,6 +146,13 @@ public class CreateContentBlockRequest
     public bool IsFullWidth { get; set; } = false;
     /// <summary>Bố cục ảnh: full | left | right</summary>
     public string? ImagePosition { get; set; }
+    public string? Title2Vi { get; set; }
+    public string? Title2En { get; set; }
+    public string? Content2Vi { get; set; }
+    public string? Content2En { get; set; }
+    public string? Image2Url { get; set; }
+    public string? Image2AltVi { get; set; }
+    public string? Image2AltEn { get; set; }
 }
 
 public class NewsFilterParams

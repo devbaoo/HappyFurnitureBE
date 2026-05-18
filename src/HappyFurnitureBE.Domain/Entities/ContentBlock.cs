@@ -5,7 +5,9 @@ namespace HappyFurnitureBE.Domain.Entities;
 public enum ContentBlockType
 {
     Text = 0,
-    Image = 1
+    Image = 1,
+    TextColumns = 2,
+    ImageColumns = 3
 }
 
 public class ContentBlock : BaseEntity
@@ -42,4 +44,25 @@ public class ContentBlock : BaseEntity
     /// <summary>Bố cục ảnh: full | left | right. Chỉ dùng khi Type = Image.</summary>
     [MaxLength(10)]
     public string? ImagePosition { get; set; }
+
+    // TextColumns: cột phải
+    [MaxLength(255)]
+    public string? Title2Vi { get; set; }
+
+    [MaxLength(255)]
+    public string? Title2En { get; set; }
+
+    public string? Content2Vi { get; set; }
+
+    public string? Content2En { get; set; }
+
+    // ImageColumns: ảnh phải
+    [MaxLength(500)]
+    public string? Image2Url { get; set; }
+
+    [MaxLength(255)]
+    public string? Image2AltVi { get; set; }
+
+    [MaxLength(255)]
+    public string? Image2AltEn { get; set; }
 }

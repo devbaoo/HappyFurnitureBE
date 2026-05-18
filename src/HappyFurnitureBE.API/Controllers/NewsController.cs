@@ -176,7 +176,14 @@ public class NewsController : ControllerBase
                     ImageAltEn = blockReq.ImageAltEn,
                     SortOrder = blockReq.SortOrder,
                     IsFullWidth = blockReq.IsFullWidth,
-                    ImagePosition = blockReq.ImagePosition
+                    ImagePosition = blockReq.ImagePosition,
+                    Title2Vi = blockReq.Title2Vi,
+                    Title2En = blockReq.Title2En,
+                    Content2Vi = blockReq.Content2Vi,
+                    Content2En = blockReq.Content2En,
+                    Image2Url = blockReq.Image2Url,
+                    Image2AltVi = blockReq.Image2AltVi,
+                    Image2AltEn = blockReq.Image2AltEn
                 };
                 await _contentBlockRepo.AddAsync(block);
             }
@@ -234,7 +241,14 @@ public class NewsController : ControllerBase
                     ImageAltEn = blockReq.ImageAltEn,
                     SortOrder = blockReq.SortOrder,
                     IsFullWidth = blockReq.IsFullWidth,
-                    ImagePosition = blockReq.ImagePosition
+                    ImagePosition = blockReq.ImagePosition,
+                    Title2Vi = blockReq.Title2Vi,
+                    Title2En = blockReq.Title2En,
+                    Content2Vi = blockReq.Content2Vi,
+                    Content2En = blockReq.Content2En,
+                    Image2Url = blockReq.Image2Url,
+                    Image2AltVi = blockReq.Image2AltVi,
+                    Image2AltEn = blockReq.Image2AltEn
                 };
                 await _contentBlockRepo.AddAsync(block);
             }
@@ -352,7 +366,14 @@ public class NewsController : ControllerBase
             ImageAltEn = cb.ImageAltEn,
             SortOrder = cb.SortOrder,
             IsFullWidth = cb.IsFullWidth,
-            ImagePosition = imagePosition
+            ImagePosition = imagePosition,
+            Title2Vi = cb.Title2Vi,
+            Title2En = cb.Title2En,
+            Content2Vi = cb.Content2Vi,
+            Content2En = cb.Content2En,
+            Image2Url = cb.Image2Url,
+            Image2AltVi = cb.Image2AltVi,
+            Image2AltEn = cb.Image2AltEn
         };
     }
 }
