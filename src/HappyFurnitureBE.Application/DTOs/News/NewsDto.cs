@@ -58,6 +58,14 @@ public class ContentBlockDto
     public string? Image2Url { get; set; }
     public string? Image2AltVi { get; set; }
     public string? Image2AltEn { get; set; }
+    public string? Alignment { get; set; }
+    public string? Title3Vi { get; set; }
+    public string? Title3En { get; set; }
+    public string? Content3Vi { get; set; }
+    public string? Content3En { get; set; }
+    public string? Image3Url { get; set; }
+    public string? Image3AltVi { get; set; }
+    public string? Image3AltEn { get; set; }
 }
 
 public class NewsDetailDto
@@ -153,6 +161,14 @@ public class CreateContentBlockRequest
     public string? Image2Url { get; set; }
     public string? Image2AltVi { get; set; }
     public string? Image2AltEn { get; set; }
+    public string? Alignment { get; set; }
+    public string? Title3Vi { get; set; }
+    public string? Title3En { get; set; }
+    public string? Content3Vi { get; set; }
+    public string? Content3En { get; set; }
+    public string? Image3Url { get; set; }
+    public string? Image3AltVi { get; set; }
+    public string? Image3AltEn { get; set; }
 }
 
 public class NewsFilterParams

@@ -183,7 +183,15 @@ public class NewsController : ControllerBase
                     Content2En = blockReq.Content2En,
                     Image2Url = blockReq.Image2Url,
                     Image2AltVi = blockReq.Image2AltVi,
-                    Image2AltEn = blockReq.Image2AltEn
+                    Image2AltEn = blockReq.Image2AltEn,
+                    Alignment = blockReq.Alignment,
+                    Title3Vi = blockReq.Title3Vi,
+                    Title3En = blockReq.Title3En,
+                    Content3Vi = blockReq.Content3Vi,
+                    Content3En = blockReq.Content3En,
+                    Image3Url = blockReq.Image3Url,
+                    Image3AltVi = blockReq.Image3AltVi,
+                    Image3AltEn = blockReq.Image3AltEn
                 };
                 await _contentBlockRepo.AddAsync(block);
             }
@@ -248,7 +256,15 @@ public class NewsController : ControllerBase
                     Content2En = blockReq.Content2En,
                     Image2Url = blockReq.Image2Url,
                     Image2AltVi = blockReq.Image2AltVi,
-                    Image2AltEn = blockReq.Image2AltEn
+                    Image2AltEn = blockReq.Image2AltEn,
+                    Alignment = blockReq.Alignment,
+                    Title3Vi = blockReq.Title3Vi,
+                    Title3En = blockReq.Title3En,
+                    Content3Vi = blockReq.Content3Vi,
+                    Content3En = blockReq.Content3En,
+                    Image3Url = blockReq.Image3Url,
+                    Image3AltVi = blockReq.Image3AltVi,
+                    Image3AltEn = blockReq.Image3AltEn
                 };
                 await _contentBlockRepo.AddAsync(block);
             }
@@ -373,7 +389,15 @@ public class NewsController : ControllerBase
             Content2En = cb.Content2En,
             Image2Url = cb.Image2Url,
             Image2AltVi = cb.Image2AltVi,
-            Image2AltEn = cb.Image2AltEn
+            Image2AltEn = cb.Image2AltEn,
+            Alignment = cb.Alignment,
+            Title3Vi = cb.Title3Vi,
+            Title3En = cb.Title3En,
+            Content3Vi = cb.Content3Vi,
+            Content3En = cb.Content3En,
+            Image3Url = cb.Image3Url,
+            Image3AltVi = cb.Image3AltVi,
+            Image3AltEn = cb.Image3AltEn
         };
     }
 }
