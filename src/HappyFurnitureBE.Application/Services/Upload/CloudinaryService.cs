@@ -31,9 +31,9 @@ public class CloudinaryService : ICloudinaryService
         if (!allowedTypes.Contains(file.ContentType.ToLower()))
             throw new ArgumentException("Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.");
 
-        // Validate file size (max 10MB)
-        if (file.Length > 10 * 1024 * 1024)
-            throw new ArgumentException("File size cannot exceed 10MB");
+        // Validate file size (max 50MB)
+        if (file.Length > 50 * 1024 * 1024)
+            throw new ArgumentException("File size cannot exceed 50MB");
 
         using var stream = file.OpenReadStream();
         
