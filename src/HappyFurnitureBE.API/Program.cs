@@ -9,11 +9,24 @@ using HappyFurnitureBE.Domain.Interfaces;
 using HappyFurnitureBE.Infrastructure.Data;
 using HappyFurnitureBE.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Increase multipart form data and request body size limits for bulk image uploads (up to 100MB)
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 104_857_600; // 100 MB
+    options.ValueLengthLimit = int.MaxValue;
+    options.MultipartHeadersLengthLimit = int.MaxValue;
+});
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.MaxRequestBodySize = 104_857_600; // 100 MB
+});
 
 // Add services to the container.
 builder.Services.AddControllers()
