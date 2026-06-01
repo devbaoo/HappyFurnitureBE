@@ -3,7 +3,15 @@
     "allow": [
       "Bash(dotnet ef:*)",
       "Bash(dotnet build:*)",
-      "Bash(xargs grep *)"
+      "Bash(xargs grep *)",
+      "Bash(rtk git *)",
+      "WebFetch(domain:happyfurniture-huexcrecemgaesdy.southeastasia-01.azurewebsites.net)",
+      "Bash(rtk ls *)",
+      "Bash(dotnet list *)",
+      "Bash(dotnet restore *)",
+      "Bash(dotnet add *)",
+      "Bash(rtk dotnet *)",
+      "Bash(dotnet remove *)"
     ]
   }
 }

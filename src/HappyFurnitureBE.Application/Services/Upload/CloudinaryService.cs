@@ -3,6 +3,7 @@ using CloudinaryDotNet.Actions;
 using HappyFurnitureBE.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using SkiaSharp;
 
 namespace HappyFurnitureBE.Application.Services.Upload;
 
@@ -35,11 +36,22 @@ public class CloudinaryService : ICloudinaryService
         if (file.Length > 50 * 1024 * 1024)
             throw new ArgumentException("File size cannot exceed 50MB");
 
-        using var stream = file.OpenReadStream();
-        
+        const long cloudinaryLimit = 9 * 1024 * 1024; // 9MB — stays under Cloudinary 10MB plan limit
+        Stream uploadStream;
+
+        if (file.Length > cloudinaryLimit)
+        {
+            // Compress image iteratively until under 9MB
+            uploadStream = await CompressImageAsync(file, cloudinaryLimit);
+        }
+        else
+        {
+            uploadStream = file.OpenReadStream();
+        }
+
         var uploadParams = new ImageUploadParams()
         {
-            File = new FileDescription(file.FileName, stream),
+            File = new FileDescription(file.FileName, uploadStream),
             Folder = folder,
             Transformation = new Transformation()
                 .Quality("auto")
@@ -48,6 +60,7 @@ public class CloudinaryService : ICloudinaryService
         };
 
         var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+        await uploadStream.DisposeAsync();
 
         if (uploadResult.Error != null)
             throw new Exception($"Cloudinary upload error: {uploadResult.Error.Message}");
@@ -73,7 +86,37 @@ public class CloudinaryService : ICloudinaryService
 
         var uploadTasks = files.Select(file => UploadImageAsync(file, folder));
         var results = await Task.WhenAll(uploadTasks);
-        
+
         return results.ToList();
+    }
+
+    private static Task<Stream> CompressImageAsync(IFormFile file, long targetBytes)
+        => Task.FromResult(CompressImageSync(file, targetBytes));
+
+    private static Stream CompressImageSync(IFormFile file, long targetBytes)
+    {
+        using var sourceStream = file.OpenReadStream();
+        var bytes = new byte[sourceStream.Length];
+        _ = sourceStream.Read(bytes);
+
+        using var skData = SKData.CreateCopy(bytes);
+        using var bitmap = SKBitmap.Decode(skData);
+
+        int quality = 85;
+        SKData? encoded;
+
+        do
+        {
+            encoded = bitmap.Encode(SKEncodedImageFormat.Jpeg, quality);
+            if (encoded.Size <= targetBytes || quality <= 20)
+                break;
+
+            encoded.Dispose();
+            quality -= 10;
+        } while (true);
+
+        var output = new MemoryStream(encoded.ToArray());
+        encoded.Dispose();
+        return output;
     }
 }
