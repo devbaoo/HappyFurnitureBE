@@ -58,7 +58,7 @@ public class UploadController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while uploading image");
-            return StatusCode(500, new { message = "Internal server error during upload" });
+            return StatusCode(500, new { message = ex.Message });
         }
     }
 
