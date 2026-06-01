@@ -11,7 +11,9 @@
       "Bash(dotnet restore *)",
       "Bash(dotnet add *)",
       "Bash(rtk dotnet *)",
-      "Bash(dotnet remove *)"
+      "Bash(dotnet remove *)",
+      "Bash(npm install *)",
+      "Bash(npm list *)"
     ]
   }
 }
