@@ -1,0 +1,38 @@
+# ==============================================================
+#  docker-compose.yml – HappyFurnitureBE (ASP.NET Core 8.0 API)
+# ==============================================================
+#
+#  Cách chạy:
+#    1. Sao chép .env.example → .env rồi điền giá trị thực
+#    2. docker compose up --build
+#
+#  API sẽ chạy tại: http://localhost:8080
+#  Swagger UI:      http://localhost:8080/swagger
+# ==============================================================
+
+services:
+  happyfurniture-be:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: happyfurniture-be
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # Kết nối database PostgreSQL
+      - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
+      # JWT
+      - JwtSettings__SecretKey=${JWT_SECRET_KEY}
+      - JwtSettings__Issuer=${JWT_ISSUER:-HappyFurnitureBE}
+      - JwtSettings__Audience=${JWT_AUDIENCE:-HappyFurnitureBE-Users}
+      # Cloudinary
+      - Cloudinary__CloudName=${CLOUDINARY_CLOUD_NAME}
+      - Cloudinary__ApiKey=${CLOUDINARY_API_KEY}
+      - Cloudinary__ApiSecret=${CLOUDINARY_API_SECRET}
+      # Recaptcha
+      - Recaptcha__SecretKey=${RECAPTCHA_SECRET_KEY}
+      - Recaptcha__SiteKey=${RECAPTCHA_SITE_KEY}
+      # ASP.NET Core
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
+      - ASPNETCORE_URLS=http://+:8080
