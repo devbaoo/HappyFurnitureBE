@@ -1,0 +1,28 @@
+# ==============================================================
+#  .dockerignore – HappyFurnitureBE
+#  Loại bỏ file không cần thiết để giảm build context
+# ==============================================================
+
+# Build artifacts (dotnet)
+**/bin/
+**/obj/
+
+# Git
+.git
+.gitignore
+.github
+
+# IDE / OS
+.vs/
+.idea/
+.DS_Store
+*.user
+
+# Docs
+docs/
+README.md
+
+# Docker files (không cần copy vào image)
+Dockerfile
+docker-compose.yml
+.dockerignore
